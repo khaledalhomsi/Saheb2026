@@ -1,13 +1,16 @@
 
 <!DOCTYPE html>
 <!-- Chosen Palette: Sahibinden Classic Blue & Yellow (Warm Neutrals & High Contrast Highlights) -->
-<!-- Application Structure Plan: Single-page application designed for Arabic users in Turkey & Istanbul. Features Mandated Email Verification on New Registration, Permanent Cloud Firestore sync for Footer settings and listings, dynamic low-footprint image canvas compression, auth-gated seller contact options, permanent session rehydration, post-publish success modal popup, dynamic social links toggle, Job & Services text-only posting mode without image requirements, location display, fix for Admin toggle featured functionality, cross-session email-bound ad publishing restrictions, body scroll-lock & touch containment on modals, modal bottom safe-padding (pb-28), and full AdSense compliance (Comprehensive Privacy Policy with Google DART Cookies & Third-party Ads, About Us modal detailing the Arab partners initiative, and Interactive Contact Us modal linked to admin email). -->
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title id="pageTitle">Sahibindenarap - موقع من صاحب العربي للبيع والشراء في تركيا وإسطنبول</title>
 <meta name="description" content="منصة Sahibindenarap المنصة العربية الأولى في تركيا وإسطنبول للبيع والشراء مباشرة بدون وسيط. عقارات وشقق، مصانع ومحلات تجارية، ملابس وفساتين وإكسسوارات، سيارات، سياحة واستقبال، قدم خدمتك/عندك خدمة؟ وفرص عمل.">
+
+<!-- Google AdSense Script Integration -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8732220835201453" crossorigin="anonymous"></script>
+
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -43,7 +46,15 @@ html { scroll-behavior: smooth; }
 body { font-family: 'Cairo', sans-serif; background-color: #f8f9fa; margin: 0; padding: 0; }
 body.modal-open { overflow: hidden !important; height: 100vh; touch-action: none; overscroll-behavior: none; }
 #customModal, #modalCard, #privacyModal, #aboutModal, #contactModal, #googleAdModal { overscroll-behavior: contain; }
-.adsense-box { background: repeating-linear-gradient(45deg, #fbfbfb, #fbfbfb 10px, #f1f1f1 10px, #f1f1f1 20px); }
+.adsense-box { 
+  background: repeating-linear-gradient(45deg, #fbfbfb, #fbfbfb 10px, #f1f1f1 10px, #f1f1f1 20px); 
+  min-height: 90px;
+  max-height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
 .line-clamp-2 {
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -60,8 +71,13 @@ body.modal-open { overflow: hidden !important; height: 100vh; touch-action: none
 
 <!-- AdSense Top Banner -->
 <div class="max-w-7xl mx-auto px-3 sm:px-6 mt-2 w-full">
-  <div class="adsense-box border border-dashed border-gray-300 rounded-lg text-center py-2 px-4 text-xs text-gray-400 font-semibold shadow-sm">
-    <i class="fa-solid fa-rectangle-ad text-gray-400 ml-1"></i> مساحة إعلانية مخصصة لجوجل أدسنس (Top Banner)
+  <div class="adsense-box border border-dashed border-gray-300 rounded-lg text-center py-2 px-4 text-xs text-gray-400 font-semibold shadow-sm w-full">
+    <ins class="adsbygoogle"
+         style="display:block; width:100%; height:90px;"
+         data-ad-client="ca-pub-8732220835201453"
+         data-ad-slot="auto"
+         data-ad-format="horizontal"
+         data-full-width-responsive="true"></ins>
   </div>
 </div>
 
@@ -136,12 +152,14 @@ body.modal-open { overflow: hidden !important; height: 100vh; touch-action: none
     <p class="text-xs text-gray-600 leading-relaxed font-semibold">
       يحق لكل بريد إلكتروني نشر إعلان مجاني واحد شهرياً بشكل مباشر. لنشر إعلانك الإضافي لهذا الشهر، يُرجى مشاهدة هذا الإعلان القصير حتى نهاية العداد.
     </p>
-    <div class="bg-gray-900 rounded-xl p-6 text-white space-y-3 border-2 border-dashed border-yellow-400/50 relative">
-      <div class="text-4xl text-yellow-400 animate-bounce"><i class="fa-brands fa-google"></i></div>
-      <div class="text-xs font-bold text-gray-200">إعلان سياحة وتطوير العقارات والخدمات في تركيا إسطنبول</div>
-      <p class="text-[11px] text-gray-400">احصل على أفضل الخدمات المباشرة من صاحب العمل مباشرة بدون عمولات وسيط.</p>
+    <div class="bg-gray-900 rounded-xl p-4 text-white space-y-3 border-2 border-dashed border-yellow-400/50 relative overflow-hidden min-h-[160px] flex flex-col items-center justify-center">
+      <ins class="adsbygoogle"
+           style="display:block; width:100%; height:100px;"
+           data-ad-client="ca-pub-8732220835201453"
+           data-ad-slot="auto"
+           data-ad-format="rectangle"></ins>
       <div class="pt-2">
-        <div class="w-16 h-16 rounded-full border-4 border-yellow-400 flex items-center justify-center mx-auto text-2xl font-black font-mono text-yellow-300 shadow-inner">
+        <div class="w-14 h-14 rounded-full border-4 border-yellow-400 flex items-center justify-center mx-auto text-xl font-black font-mono text-yellow-300 shadow-inner">
           <span id="adCountdownSeconds">10</span>
         </div>
         <p id="adTimerNotice" class="text-[10px] text-yellow-400 mt-2 font-bold animate-pulse">جاري عرض الإعلان... انتظر قليلاً لنشر إعلانك الإضافي</p>
@@ -294,8 +312,13 @@ body.modal-open { overflow: hidden !important; height: 100vh; touch-action: none
 
 <!-- AdSense Bottom Banner -->
 <div class="max-w-7xl mx-auto px-3 sm:px-6 mb-2 w-full">
-  <div class="adsense-box border border-dashed border-gray-300 rounded-lg text-center py-2 px-4 text-xs text-gray-400 font-semibold shadow-sm">
-    <i class="fa-solid fa-rectangle-ad text-gray-400 ml-1"></i> مساحة إعلانية مخصصة لجوجل أدسنس (Bottom Banner)
+  <div class="adsense-box border border-dashed border-gray-300 rounded-lg text-center py-2 px-4 text-xs text-gray-400 font-semibold shadow-sm w-full">
+    <ins class="adsbygoogle"
+         style="display:block; width:100%; height:90px;"
+         data-ad-client="ca-pub-8732220835201453"
+         data-ad-slot="auto"
+         data-ad-format="horizontal"
+         data-full-width-responsive="true"></ins>
   </div>
 </div>
 
@@ -528,6 +551,15 @@ const state = {
   siteConfig: savedConfig,
   listings: savedListings
 };
+
+function pushAdSenseSafely() {
+  try {
+    const uninitializedAds = document.querySelectorAll('ins.adsbygoogle[data-adsbygoogle-status!="done"]');
+    uninitializedAds.forEach(() => {
+      (window.adsbygoogle = window.adsbygoogle || []).push({});
+    });
+  } catch(e) {}
+}
 
 function handleLogoHomeClick() {
   closeModal();
@@ -1672,6 +1704,8 @@ function startGoogleAdWatchFlow() {
 
   document.body.classList.add('modal-open');
   adModal.classList.remove('hidden');
+  pushAdSenseSafely();
+
   if (adCountdownInterval) clearInterval(adCountdownInterval);
 
   adCountdownInterval = setInterval(() => {
@@ -2165,6 +2199,10 @@ function renderView() {
   } else if (state.activeView === 'my-listings') {
     main.innerHTML = getMyListingsHTML();
   }
+  
+  setTimeout(() => {
+    pushAdSenseSafely();
+  }, 100);
 }
 
 function getHomeHTML() {
@@ -2252,6 +2290,16 @@ function getHomeHTML() {
             }).join('')}
           </ul>
         </div>
+        
+        <!-- Sidebar Dynamic In-Feed Ad Banner -->
+        <div class="adsense-box border border-dashed border-gray-300 rounded-xl p-2 text-center overflow-hidden">
+          <ins class="adsbygoogle"
+               style="display:block; width:100%; height:250px;"
+               data-ad-client="ca-pub-8732220835201453"
+               data-ad-slot="auto"
+               data-ad-format="rectangle"
+               data-full-width-responsive="true"></ins>
+        </div>
       </div>
 
       <div class="md:col-span-3 space-y-4" id="listingsGridAnchor">
@@ -2327,6 +2375,16 @@ function getDetailsHTML() {
             <div>البلد : ${item.country || 'تركيا'} &nbsp;|&nbsp; المدينة : ${item.city} &nbsp;|&nbsp; المنطقة : ${item.district}</div>
           </div>
         </div>
+      </div>
+
+      <!-- In-Article Dynamic Ad Banner -->
+      <div class="adsense-box border border-dashed border-gray-300 rounded-xl p-2 text-center my-4 overflow-hidden">
+        <ins class="adsbygoogle"
+             style="display:block; width:100%; height:90px;"
+             data-ad-layout="in-article"
+             data-ad-format="fluid"
+             data-ad-client="ca-pub-8732220835201453"
+             data-ad-slot="auto"></ins>
       </div>
 
       <!-- شريط التنبيه الأمني المدرج في صفحة التفاصيل -->
