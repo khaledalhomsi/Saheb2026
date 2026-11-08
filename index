@@ -1,0 +1,2599 @@
+```html
+<!DOCTYPE html>
+<!-- Chosen Palette: Sahibinden Classic Blue & Yellow (Warm Neutrals & High Contrast Highlights) -->
+<!-- Application Structure Plan: Single-page application designed for Arabic users in Turkey & Istanbul. Features Mandated Email Verification on New Registration, Permanent Cloud Firestore sync for Footer settings and listings, dynamic low-footprint image canvas compression, auth-gated seller contact options, permanent session rehydration, post-publish success modal popup, dynamic social links toggle, Job & Services text-only posting mode without image requirements, location display, fix for Admin toggle featured functionality, cross-session email-bound ad publishing restrictions, body scroll-lock & touch containment on modals, modal bottom safe-padding (pb-28), and full AdSense compliance (Comprehensive Privacy Policy with Google DART Cookies & Third-party Ads, About Us modal detailing the Arab partners initiative, and Interactive Contact Us modal linked to admin email). -->
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title id="pageTitle">Sahibindenarap - موقع من صاحب العربي للبيع والشراء في تركيا وإسطنبول</title>
+<meta name="description" content="منصة Sahibindenarap المنصة العربية الأولى في تركيا وإسطنبول للبيع والشراء مباشرة بدون وسيط. عقارات وشقق، مصانع ومحلات تجارية، ملابس وفساتين وإكسسوارات، سيارات، سياحة واستقبال، قدم خدمتك/عندك خدمة؟ وفرص عمل.">
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+<!-- Standard Firebase Compatibility CDN Scripts -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        sahibinden: {
+          yellow: '#ffe800',
+          yellowDark: '#e6d000',
+          blue: '#004da6',
+          darkBlue: '#003380',
+          headerBlue: '#36558f',
+          bgGray: '#f8f9fa'
+        }
+      },
+      fontFamily: {
+        sans: ['Cairo', 'sans-serif']
+      }
+    }
+  }
+}
+</script>
+<style>
+html { scroll-behavior: smooth; }
+body { font-family: 'Cairo', sans-serif; background-color: #f8f9fa; margin: 0; padding: 0; }
+body.modal-open { overflow: hidden !important; height: 100vh; touch-action: none; overscroll-behavior: none; }
+#customModal, #modalCard, #privacyModal, #aboutModal, #contactModal, #googleAdModal { overscroll-behavior: contain; }
+.adsense-box { background: repeating-linear-gradient(45deg, #fbfbfb, #fbfbfb 10px, #f1f1f1 10px, #f1f1f1 20px); }
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: #f1f1f1; }
+::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #aaa; }
+</style>
+</head>
+<body class="bg-sahibinden-bgGray text-gray-800 antialiased min-h-screen flex flex-col justify-between">
+
+<!-- AdSense Top Banner -->
+<div class="max-w-7xl mx-auto px-3 sm:px-6 mt-2 w-full">
+  <div class="adsense-box border border-dashed border-gray-300 rounded-lg text-center py-2 px-4 text-xs text-gray-400 font-semibold shadow-sm">
+    <i class="fa-solid fa-rectangle-ad text-gray-400 ml-1"></i> مساحة إعلانية مخصصة لجوجل أدسنس (Top Banner)
+  </div>
+</div>
+
+<!-- Navigation Header -->
+<header class="bg-[#36558f] border-b-2 border-[#263f73] shadow-md relative w-full z-30 mt-2">
+  <div class="max-w-7xl mx-auto px-3 sm:px-6 py-2 sm:py-3 flex items-center justify-between gap-2 sm:gap-4">
+    <div class="flex items-center gap-2 sm:gap-3 cursor-pointer select-none shrink-0" onclick="handleLogoHomeClick()">
+      <div class="w-9 h-9 sm:w-11 sm:h-11 bg-sahibinden-yellow rounded-lg flex items-center justify-center font-black text-black text-xl sm:text-2xl shadow-md transform hover:scale-105 transition">
+        S
+      </div>
+      <div class="flex flex-col">
+        <span id="navBrandName" class="font-black text-sm sm:text-xl tracking-tight text-white leading-none">sahibindenarap</span>
+        <span id="navSubTitle" class="text-[10px] sm:text-xs font-bold text-yellow-300 leading-none mt-1">موقع من صاحب العربي</span>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-1.5 sm:gap-3">
+      <button id="btnUserAuthNav" type="button" onclick="handleAuthNavClick()" class="bg-[#1f3866] hover:bg-[#162749] text-white text-xs sm:text-sm px-2.5 sm:px-3.5 py-2 rounded-lg border border-blue-300/30 font-bold flex items-center gap-1.5 transition cursor-pointer shadow-sm">
+        <i class="fa-solid fa-user-circle text-yellow-400"></i>
+        <span id="userAuthNavText" class="hidden sm:inline">تسجيل الدخول / حساب جديد</span>
+      </button>
+
+      <button type="button" onclick="navigateTo('my-listings')" class="bg-[#1f3866] hover:bg-[#162749] text-white text-xs sm:text-sm px-2.5 sm:px-4 py-2 rounded-lg border border-blue-300/30 font-bold flex items-center gap-1.5 transition cursor-pointer shadow-sm">
+        <i class="fa-solid fa-list-check text-yellow-400"></i>
+        <span class="hidden sm:inline">إدارة إعلاناتي</span>
+      </button>
+
+      <button type="button" onclick="handleAddListingClick()" class="bg-sahibinden-yellow hover:bg-yellow-400 text-black font-extrabold text-xs sm:text-sm px-3 sm:px-5 py-2 rounded-lg shadow-md flex items-center gap-1.5 transition cursor-pointer transform hover:scale-105">
+        <i class="fa-solid fa-plus text-sm"></i>
+        <span>إضافة إعلان مجاني</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- Search Bar Section -->
+<section class="bg-sahibinden-darkBlue py-3 sm:py-4 px-3 sm:px-6 shadow-inner relative w-full z-20">
+  <div class="max-w-4xl mx-auto relative">
+    <form onsubmit="event.preventDefault(); triggerSearch();" class="relative w-full flex items-center">
+      <input type="text" id="searchInput" oninput="handleInstantSearch(event)" onkeydown="if(event.key==='Enter'){ event.preventDefault(); triggerSearch(); }"
+             placeholder="ابحث عن عقار، شقة، فستان، ملابس، فرص عمل، قدم خدمتك/عندك خدمة؟، مصنع، محل تجاري، سيارة، سياحة..." 
+             class="w-full bg-white border-none rounded-lg py-2.5 sm:py-3 pr-10 pl-28 sm:pl-32 text-xs sm:text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-yellow-400 shadow-md">
+      <i class="fa-solid fa-magnifying-glass absolute right-3.5 text-gray-400 text-sm"></i>
+      
+      <div class="absolute left-2 flex items-center gap-1.5">
+        <button id="micBtn" type="button" onclick="toggleVoiceSearch()" title="البحث الصوتي" 
+                class="bg-gray-100 hover:bg-red-50 text-gray-600 hover:text-red-600 rounded-md transition text-xs flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 border border-gray-200 cursor-pointer">
+          <i class="fa-solid fa-microphone text-sm"></i>
+        </button>
+        <button type="submit" class="bg-sahibinden-yellow text-black text-xs sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2 rounded-md font-extrabold hover:bg-yellow-400 transition shadow-sm cursor-pointer">
+          بحث
+        </button>
+      </div>
+    </form>
+    <div id="searchDropdown" class="hidden absolute top-full left-0 right-0 bg-white border border-gray-200 rounded-b-xl shadow-2xl mt-1 z-50 overflow-hidden divide-y divide-gray-100 max-h-96 overflow-y-auto"></div>
+    <div id="voiceSearchStatus" class="hidden text-center text-xs text-yellow-300 font-bold mt-2 animate-pulse">
+      <i class="fa-solid fa-microphone text-xs ml-1"></i> جاري الاستماع صوتياً... تحدث الآن
+    </div>
+  </div>
+</section>
+
+<!-- Dynamic Main View Container -->
+<main class="max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-6 flex-grow w-full" id="appMain"></main>
+
+<!-- Google AdSense Rewarded Modal -->
+<div id="googleAdModal" class="hidden fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center p-4">
+  <div class="bg-white rounded-2xl shadow-2xl border border-yellow-400 max-w-md w-full p-6 text-center space-y-4 relative overflow-hidden">
+    <div class="bg-sahibinden-yellow text-black font-black text-xs py-1 px-4 rounded-full inline-block shadow-sm">
+      <i class="fa-solid fa-rectangle-ad ml-1"></i> إعلان ممول من Google AdSense
+    </div>
+    <h3 class="font-black text-base text-gray-900">لقد استنفذت إعلانك المجاني المباشر لهذا الشهر</h3>
+    <p class="text-xs text-gray-600 leading-relaxed font-semibold">
+      يحق لكل بريد إلكتروني نشر إعلان مجاني واحد شهرياً بشكل مباشر. لنشر إعلانك الإضافي لهذا الشهر، يُرجى مشاهدة هذا الإعلان القصير حتى نهاية العداد.
+    </p>
+    <div class="bg-gray-900 rounded-xl p-6 text-white space-y-3 border-2 border-dashed border-yellow-400/50 relative">
+      <div class="text-4xl text-yellow-400 animate-bounce"><i class="fa-brands fa-google"></i></div>
+      <div class="text-xs font-bold text-gray-200">إعلان سياحة وتطوير العقارات والخدمات في تركيا إسطنبول</div>
+      <p class="text-[11px] text-gray-400">احصل على أفضل الخدمات المباشرة من صاحب العمل مباشرة بدون عمولات وسيط.</p>
+      <div class="pt-2">
+        <div class="w-16 h-16 rounded-full border-4 border-yellow-400 flex items-center justify-center mx-auto text-2xl font-black font-mono text-yellow-300 shadow-inner">
+          <span id="adCountdownSeconds">10</span>
+        </div>
+        <p id="adTimerNotice" class="text-[10px] text-yellow-400 mt-2 font-bold animate-pulse">جاري عرض الإعلان... انتظر قليلاً لنشر إعلانك الإضافي</p>
+      </div>
+    </div>
+    <button id="btnConfirmPublishAfterAd" disabled onclick="executeAdPublishing()" class="w-full bg-gray-300 text-gray-500 font-extrabold py-3 rounded-xl text-xs sm:text-sm cursor-not-allowed transition shadow-md flex items-center justify-center gap-2">
+      <i class="fa-solid fa-lock"></i> <span>انتقال لنشر الإعلان (10 ثوانٍ)</span>
+    </button>
+  </div>
+</div>
+
+<!-- Privacy Policy Modal (AdSense Compliant with DART Cookies) -->
+<div id="privacyModal" class="hidden fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+  <div class="bg-white rounded-2xl shadow-2xl border border-gray-200 max-w-2xl w-full p-6 text-right space-y-4 max-h-[90vh] flex flex-col">
+    <div class="flex items-center justify-between border-b pb-3">
+      <h3 class="font-black text-base text-sahibinden-darkBlue flex items-center gap-2">
+        <i class="fa-solid fa-shield-halved text-sahibinden-blue"></i> سياسة الخصوصية وملفات تعريف الارتباط (Cookies)
+      </h3>
+      <button type="button" onclick="closePrivacyModal()" class="text-gray-400 hover:text-red-500 font-bold text-xl cursor-pointer">×</button>
+    </div>
+    <div class="overflow-y-auto space-y-4 text-xs text-gray-700 leading-relaxed pr-2 flex-grow">
+      <p class="font-bold text-gray-900 bg-blue-50 p-3 rounded-lg border border-blue-100">
+        مرحباً بكم في منصة <strong class="text-sahibinden-blue">Sahibindenarap (موقع من صاحب العربي)</strong>. نحن نلتزم بحماية خصوصية بياناتكم الشخصية وتوفير بيئة تصفح آمنة وموثوقة تتماشى تماماً مع المعايير الدولية وسياسات Google AdSense.
+      </p>
+      
+      <h4 class="font-extrabold text-sm text-gray-900 border-r-4 border-yellow-400 pr-2">1. جمع المعلومات والبيانات الشخصية</h4>
+      <p>نقوم بجمع البيانات الضرورية فقط لتقديم وتسهيل عملية نشر الإعلانات والتواصل المباشر بين البائع والمشتري، وتشمل: البريد الإلكتروني الموثق، رقم الهاتف المُدخل للتواصل، والاسم المعروض في المنصة.</p>
+      
+      <h4 class="font-extrabold text-sm text-gray-900 border-r-4 border-yellow-400 pr-2">2. ملفات تعريف الارتباط (Cookies) وإعلانات الطرف الثالث (Google AdSense)</h4>
+      <p>تستخدم منصتنا ملفات تعريف الارتباط (Cookies) لتحسين تجربة التصفح وحفظ تفضيلات الجلسة. كما أننا نتعامل مع شبكات إعلانية كطرف ثالث مثل **Google AdSense**:</p>
+      <ul class="list-disc list-inside space-y-1.5 text-gray-600 font-semibold pl-2">
+        <li>تستخدم شركة Google بصفتها مورّداً قادماً من طرف ثالث ملفات تعريف الارتباط لعرض الإعلانات على موقعنا.</li>
+        <li>يُمكّن استخدام Google لملف تعريف الارتباط DART لعرض الإعلانات للمستخدمين استناداً إلى زيارتهم لموقعنا ومواقع أخرى على الإنترنت.</li>
+        <li>يجوز للمستخدمين إلغاء استخدام ملف تعريف الارتباط DART عن طريق زيارة <a href="https://policies.google.com/technologies/ads" target="_blank" rel="noopener noreferrer" class="text-sahibinden-blue underline font-bold">سياسة الخصوصية الخاصة بشبكة Google للمحتوى والإعلانات</a>.</li>
+        <li>تستخدم شبكات الإعلانات التابعة لجهات خارجية تقنيات في الإعلانات والروابط التي تظهر على موقعنا ويتم إرسالها مباشرة إلى متصفحك تلقائياً لقياس مدى فعالية حملاتها الإعلانية.</li>
+      </ul>
+
+      <h4 class="font-extrabold text-sm text-gray-900 border-r-4 border-yellow-400 pr-2">3. حماية البيانات وأمان الحسابات</h4>
+      <p>تلتزم منصة <strong>Sahibindenarap</strong> بطلب التحقق الإجباري للبريد الإلكتروني لمنع الحسابات الوهمية والسلوكيات الاحتيالية. نحن لا نبيع أو نشارك بياناتكم الشخصية مع أي جهات خارجية لأغراض التسويق المباشر.</p>
+      
+      <h4 class="font-extrabold text-sm text-gray-900 border-r-4 border-yellow-400 pr-2">4. حقوق المستخدم وإدارة الحساب</h4>
+      <p>يحق لأي مستخدم تعديل بياناته أو طلب حذف إعلاناته وحسابه بشكل نهائي في أي وقت من خلال التواصل المباشر مع فريق الدعم الفني عبر البريد الإلكتروني الرسمي المنشور بالموقع.</p>
+    </div>
+    <div class="pt-2 border-t flex justify-end">
+      <button type="button" onclick="closePrivacyModal()" class="bg-sahibinden-blue text-white font-extrabold px-6 py-2 rounded-lg text-xs hover:bg-blue-800 transition shadow cursor-pointer">
+        فهمت وموافق
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- About Us Modal -->
+<div id="aboutModal" class="hidden fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+  <div class="bg-white rounded-2xl shadow-2xl border border-gray-200 max-w-2xl w-full p-6 text-right space-y-4 max-h-[90vh] flex flex-col">
+    <div class="flex items-center justify-between border-b pb-3">
+      <h3 class="font-black text-base text-sahibinden-darkBlue flex items-center gap-2">
+        <i class="fa-solid fa-users text-sahibinden-yellow"></i> من نحن - Sahibindenarap
+      </h3>
+      <button type="button" onclick="closeAboutModal()" class="text-gray-400 hover:text-red-500 font-bold text-xl cursor-pointer">×</button>
+    </div>
+    <div class="overflow-y-auto space-y-4 text-xs text-gray-700 leading-relaxed pr-2 flex-grow">
+      <div class="bg-gradient-to-r from-blue-900 to-sahibinden-darkBlue text-white p-4 rounded-xl space-y-2 shadow-sm">
+        <h4 class="font-black text-sm text-yellow-300">جسور التواصل بين المغتربين والشركاء العرب 🇹🇷 🌍</h4>
+        <p class="text-gray-200 leading-relaxed font-semibold">
+          نحن مجموعة شركاء عرب عبر الإنترنت، قررنا تجميع العرب بين بعضهم البعض حيث يلتقي البائع مع المشتري ومقدم الخدمات مع من يبحث عن خدمة وفرص العمل لمن يبحث عن عمل بكل سهولة وأمان بدون وسيط أو عمولات.
+        </p>
+      </div>
+
+      <h4 class="font-extrabold text-sm text-gray-900 border-r-4 border-yellow-400 pr-2">رؤيتنا ورسالتنا الاحترافية</h4>
+      <p>
+        نشأت منصة <strong>Sahibindenarap (موقع من صاحب العربي)</strong> لتكون الدليل والتجمع التجاري والخدمي الأول لكافة أبناء الجاليات العربية في إسطنبول وجميع الولايات التركية والدول العربية. هدفنا هو تقديم منصة تفاعلية متكاملة تجمع كافة التخصصات والخدمات في مكان واحد:
+      </p>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+        <div class="bg-gray-50 p-3 rounded-xl border border-gray-200 space-y-1">
+          <div class="font-bold text-sahibinden-blue text-xs flex items-center gap-1.5">
+            <i class="fa-solid fa-building-user text-blue-600"></i> عقارات ومصانع وتجارة
+          </div>
+          <p class="text-[11px] text-gray-600">عروض شقق مباشرة للبيع أو الإيجار، فروغ محلات ومصانع خياطة وتجهيزات جاهزة للتشغيل.</p>
+        </div>
+
+        <div class="bg-gray-50 p-3 rounded-xl border border-gray-200 space-y-1">
+          <div class="font-bold text-sahibinden-blue text-xs flex items-center gap-1.5">
+            <i class="fa-solid fa-hand-holding-hand text-indigo-600"></i> تقديم الخدمات والفرص
+          </div>
+          <p class="text-[11px] text-gray-600">مساحة خاصة لمن يقدم خدمة احترافية أو يبحث عن وظائف وخبراء وموظفين بدون تعقيدات.</p>
+        </div>
+      </div>
+
+      <p class="bg-amber-50 p-3 rounded-lg border border-amber-200 text-amber-900 font-semibold text-[11px]">
+        💡 نلتزم بمعايير الشفافية العالية والأمان الرقمي والتطوير المستمر لنبقى الخيار الأول والأوثق للبيع والشراء والتواصل بين العرب في تركيا.
+      </p>
+    </div>
+    <div class="pt-2 border-t flex justify-end">
+      <button type="button" onclick="closeAboutModal()" class="bg-sahibinden-blue text-white font-extrabold px-6 py-2 rounded-lg text-xs hover:bg-blue-800 transition shadow cursor-pointer">
+        إغلاق
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Contact Us Modal -->
+<div id="contactModal" class="hidden fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+  <div class="bg-white rounded-2xl shadow-2xl border border-gray-200 max-w-lg w-full p-6 text-right space-y-4 max-h-[90vh] flex flex-col">
+    <div class="flex items-center justify-between border-b pb-3">
+      <h3 class="font-black text-base text-sahibinden-darkBlue flex items-center gap-2">
+        <i class="fa-regular fa-paper-plane text-sahibinden-blue"></i> اتصل بنا - الدعم الفني
+      </h3>
+      <button type="button" onclick="closeContactModal()" class="text-gray-400 hover:text-red-500 font-bold text-xl cursor-pointer">×</button>
+    </div>
+
+    <div class="space-y-3 overflow-y-auto pr-1 flex-grow">
+      <div class="bg-blue-50 p-3 rounded-xl border border-blue-100 text-xs space-y-1.5 font-semibold text-blue-900">
+        <p>يسعدنا التواصل معكم! يمكنكم مراسلتنا فوراً عبر البريد الإلكتروني الرسمي لخدمة العملاء والدعم الفني:</p>
+        <a id="modalContactEmailLink" href="mailto:aziyaa.turkish@gmail.com" class="inline-flex items-center gap-2 font-mono font-bold text-sahibinden-blue hover:underline bg-white px-3 py-1.5 rounded-lg border border-blue-200 dir-ltr text-xs">
+          <i class="fa-regular fa-envelope"></i> aziyaa.turkish@gmail.com
+        </a>
+      </div>
+
+      <form onsubmit="handleContactSubmit(event)" class="space-y-3 pt-2">
+        <div>
+          <label class="block text-xs font-bold text-gray-700 mb-1">الاسم الكامل *</label>
+          <input type="text" id="contactName" required placeholder="أدخل اسمك الكريم..." class="w-full border rounded-lg p-2.5 text-xs outline-none focus:ring-2 focus:ring-sahibinden-blue">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-gray-700 mb-1">البريد الإلكتروني للرد *</label>
+          <input type="email" id="contactEmail" required placeholder="example@mail.com" class="w-full border rounded-lg p-2.5 text-xs outline-none focus:ring-2 focus:ring-sahibinden-blue">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-gray-700 mb-1">عنوان الرسالة / الموضوع *</label>
+          <input type="text" id="contactSubject" required placeholder="استفسار، اقتراح، بلاغ عن إعلان..." class="w-full border rounded-lg p-2.5 text-xs outline-none focus:ring-2 focus:ring-sahibinden-blue">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-gray-700 mb-1">نص الرسالة *</label>
+          <textarea id="contactMessage" rows="3" required placeholder="اكتب رسالتك بالتفصيل هنا..." class="w-full border rounded-lg p-2.5 text-xs leading-relaxed outline-none focus:ring-2 focus:ring-sahibinden-blue"></textarea>
+        </div>
+
+        <button type="submit" class="w-full bg-sahibinden-yellow hover:bg-yellow-400 text-black font-extrabold py-3 rounded-lg text-xs sm:text-sm transition shadow cursor-pointer flex items-center justify-center gap-2">
+          <i class="fa-solid fa-paper-plane"></i> إرسال الرسالة إلى الدعم الفني
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Generic Custom Popup Modal Container -->
+<div id="customModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-start sm:items-center justify-center p-3 sm:p-4 overflow-y-auto overscroll-contain">
+  <div id="modalCard" class="bg-white rounded-xl shadow-2xl border border-gray-200 max-w-lg w-full p-5 sm:p-6 pb-28 sm:pb-8 transform transition-all my-auto max-h-[92vh] overflow-y-auto"></div>
+</div>
+
+<!-- AdSense Bottom Banner -->
+<div class="max-w-7xl mx-auto px-3 sm:px-6 mb-2 w-full">
+  <div class="adsense-box border border-dashed border-gray-300 rounded-lg text-center py-2 px-4 text-xs text-gray-400 font-semibold shadow-sm">
+    <i class="fa-solid fa-rectangle-ad text-gray-400 ml-1"></i> مساحة إعلانية مخصصة لجوجل أدسنس (Bottom Banner)
+  </div>
+</div>
+
+<!-- Footer -->
+<footer class="bg-gray-900 text-gray-300 text-xs py-8 sm:py-12 border-t border-gray-800 mt-6 w-full">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 grid grid-cols-1 md:grid-cols-4 gap-8">
+    <div class="space-y-3">
+      <div class="flex items-center gap-2 cursor-pointer select-none" onclick="handleHiddenFooterAdminShortcut()" title="Sahibindenarap">
+        <div class="w-8 h-8 bg-sahibinden-yellow text-black font-black text-lg flex items-center justify-center rounded-md">S</div>
+        <span id="footerBrandName" class="font-bold text-base text-white">Sahibindenarap</span>
+      </div>
+      <p id="footerDescText" class="text-gray-400 leading-relaxed text-xs">
+        موقع من صاحب العربي 🇹🇷 هو اول موقع في تركيا يجمع العرب بين البائع وشاري. بل إضافة الى خدمات الموقع في دول العربية.
+      </p>
+      <div class="bg-gray-800/80 p-2.5 rounded-lg border border-gray-700/80 text-[11px] text-yellow-300 font-bold flex items-center gap-2">
+        <i class="fa-solid fa-map-location-dot text-sahibinden-yellow text-sm"></i>
+        <span id="footerCompanyAddressText">Istanbul Levent Plaza 314</span>
+      </div>
+      <div id="footerSocialBar" class="hidden items-center gap-2 pt-2 flex-wrap"></div>
+    </div>
+
+    <div>
+      <h4 class="font-bold text-white mb-3 text-sm border-b border-gray-800 pb-2">كلمات مفتاحية شائعة</h4>
+      <div id="footerKeywordsContainer" class="flex flex-wrap gap-1.5"></div>
+    </div>
+
+    <div>
+      <h4 class="font-bold text-white mb-3 text-sm border-b border-gray-800 pb-2">أقسام الموقع</h4>
+      <ul class="space-y-2 text-gray-400 text-xs" id="footerCategoriesList">
+        <li><a href="#" onclick="filterByCategory('real-estate')" class="hover:text-yellow-400 transition">عقارات وشقق</a></li>
+        <li><a href="#" onclick="filterByCategory('factories-shops')" class="hover:text-yellow-400 transition">مصانع ومحلات تجارية</a></li>
+        <li><a href="#" onclick="filterByCategory('vehicles')" class="hover:text-yellow-400 transition">سيارات وإيجار</a></li>
+        <li><a href="#" onclick="filterByCategory('phones')" class="hover:text-yellow-400 transition">هواتف وتكنولوجيا</a></li>
+        <li><a href="#" onclick="filterByCategory('tourism')" class="hover:text-yellow-400 transition">سياحة واستقبال من وإلى</a></li>
+        <li><a href="#" onclick="filterByCategory('jobs')" class="hover:text-yellow-400 transition">فرص عمل</a></li>
+        <li><a href="#" onclick="filterByCategory('services')" class="hover:text-yellow-400 transition">قدم خدمتك/عندك خدمة؟</a></li>
+        <li><a href="#" onclick="filterByCategory('clothing')" class="hover:text-yellow-400 transition">ملابس وفساتين وإكسسوارات</a></li>
+        <li><a href="#" onclick="filterByCategory('electronics')" class="hover:text-yellow-400 transition">أدوات كهربائية</a></li>
+        <li><a href="#" onclick="filterByCategory('shopping')" class="hover:text-yellow-400 transition">أثاث ومنتجات</a></li>
+      </ul>
+    </div>
+
+    <div>
+      <h4 class="font-bold text-white mb-3 text-sm border-b border-gray-800 pb-2">الدعم الفني والصفحات القانونية</h4>
+      <div class="text-yellow-400 font-bold font-mono text-xs space-y-2">
+        <div id="footerEmailBox">
+          <a id="footerEmailLink" href="mailto:aziyaa.turkish@gmail.com" class="inline-flex items-center gap-2 hover:text-yellow-300 transition bg-gray-800 px-3 py-2 rounded-lg border border-gray-700 w-full truncate">
+            <i class="fa-regular fa-envelope text-yellow-400 text-sm"></i>
+            <span id="footerEmailText">aziyaa.turkish@gmail.com</span>
+          </a>
+        </div>
+        <div id="footerPhoneBox" class="hidden">
+          <a id="footerPhoneLink" href="tel:+905551234567" class="inline-flex items-center gap-2 text-gray-300 hover:text-white transition bg-gray-800 px-3 py-2 rounded-lg border border-gray-700 w-full truncate">
+            <i class="fa-solid fa-phone text-emerald-400 text-sm"></i>
+            <span id="footerPhoneText">+905551234567</span>
+          </a>
+        </div>
+      </div>
+      <div class="pt-3 space-y-2">
+        <button type="button" onclick="openAboutModal()" class="text-xs text-gray-400 hover:text-yellow-400 font-bold transition flex items-center gap-1.5 cursor-pointer">
+          <i class="fa-solid fa-users text-yellow-400"></i> من نحن (عن المنصة)
+        </button>
+        <button type="button" onclick="openContactModal()" class="text-xs text-gray-400 hover:text-yellow-400 font-bold transition flex items-center gap-1.5 cursor-pointer">
+          <i class="fa-regular fa-paper-plane text-yellow-400"></i> اتصل بنا والدعم الفني
+        </button>
+        <button type="button" onclick="openPrivacyModal()" class="text-xs text-gray-400 hover:text-yellow-400 font-bold transition flex items-center gap-1.5 cursor-pointer">
+          <i class="fa-solid fa-shield-halved text-yellow-400"></i> سياسة الخصوصية والكوكيز
+        </button>
+      </div>
+      <div id="footerCopyrightText" class="text-gray-500 mt-4 text-[11px] cursor-pointer select-none border-t border-gray-800 pt-2" onclick="handleHiddenFooterAdminShortcut()">
+        جميع الحقوق محفوظة © 2026 موقع من الصاحب العربي
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+const categoryListOrdered = [
+  { id: 'all', icon: 'fa-layer-group text-gray-600', label: 'كل الإعلانات' },
+  { id: 'real-estate', icon: 'fa-building text-blue-600', label: 'عقارات وشقق' },
+  { id: 'factories-shops', icon: 'fa-store text-amber-600', label: 'مصانع ومحلات تجارية' },
+  { id: 'vehicles', icon: 'fa-car text-red-600', label: 'سيارات وإيجار' },
+  { id: 'phones', icon: 'fa-mobile-screen-button text-purple-600', label: 'هواتف وتكنولوجيا' },
+  { id: 'tourism', icon: 'fa-plane-arrival text-sky-600', label: 'سياحة واستقبال من وإلى' },
+  { id: 'jobs', icon: 'fa-briefcase text-emerald-600', label: 'فرص عمل' },
+  { id: 'services', icon: 'fa-hand-holding-hand text-indigo-600', label: 'قدم خدمتك/عندك خدمة؟' },
+  { id: 'clothing', icon: 'fa-shirt text-pink-600', label: 'ملابس وفساتين وإكسسوارات' },
+  { id: 'electronics', icon: 'fa-plug text-cyan-600', label: 'أدوات كهربائية' },
+  { id: 'shopping', icon: 'fa-cart-shopping text-purple-600', label: 'أثاث ومنتجات' }
+];
+
+const categoryNames = {};
+categoryListOrdered.forEach(c => { categoryNames[c.id] = c.label; });
+
+const listingTypeNames = {
+  'rent': 'إيجار',
+  'buy': 'بيع',
+  'forog': 'فروغ'
+};
+
+const defaultSiteConfig = {
+  siteName: 'Sahibindenarap',
+  siteSubTitle: 'موقع من صاحب العربي',
+  adminEmail: 'aziyaa.turkish@gmail.com',
+  showEmail: true,
+  adminPhone: '+905551234567',
+  showPhone: false,
+  featuredFee: '150 TL',
+  footerDesc: 'موقع من صاحب العربي 🇹🇷 هو اول موقع في تركيا يجمع العرب بين البائع وشاري. بل إضافة الى خدمات الموقع في دول العربية.',
+  companyAddress: 'Istanbul Levent Plaza 314',
+  footerKeywords: 'فرص عمل, قدم خدمتك/عندك خدمة؟, فستان سهرة, فستان طلعة, مانطو, مصنع خياطة, فروغ محل, شقة إيجار, بيع سيارات, خدمات اسطنبول',
+  footerCopyright: 'جميع الحقوق محفوظة © 2026 موقع من الصاحب العربي',
+  cloudinaryCloudName: 'qdgvybtg',
+  cloudinaryApiKey: '741197766625241',
+  firebaseApiKey: 'AIzaSyAJapZm8XYYgNcO2shYr8OaZbT74tHekMM',
+  firebaseAuthDomain: 'sahibindenarap-a1e0c.firebaseapp.com',
+  firebaseProjectId: 'sahibindenarap-a1e0c',
+  firebaseStorageBucket: 'sahibindenarap-a1e0c.firebasestorage.app',
+  socials: {
+    telegram: { url: 'https://t.me/sahibindenarap', show: false },
+    youtube: { url: 'https://youtube.com/@sahibindenarap', show: false },
+    instagram: { url: 'https://instagram.com/@sahibindenarap', show: false },
+    whatsapp: { url: 'https://wa.me/905551234567', show: false },
+    facebook: { url: 'https://facebook.com/@sahibindenarap', show: false },
+    tiktok: { url: 'https://tiktok.com/@sahibindenarap', show: false },
+    snapchat: { url: 'https://snapchat.com/add/sahibindenarap', show: false }
+  }
+};
+
+const generatedDummyListings = [];
+const citiesPool = ['إسطنبول', 'أنقرة', 'بورصة', 'أنطاليا', 'إزمير', 'غازي عنتاب', 'مرسين', 'يالوفا'];
+const distPool = ['الفاتح', 'باشاك شهير', 'بيوغلو', 'ساريير', 'شيشلي', 'منطقة وسطية', 'نيلوفر', 'مراد باشا'];
+const categoriesPool = ['real-estate', 'factories-shops', 'vehicles', 'phones', 'tourism', 'jobs', 'services', 'clothing', 'electronics', 'shopping'];
+const titlesPool = [
+  'شقة فاخرة للإيجار بإطلالة بحرية', 'معمل خياطة وتفصيل جاهز للتشغيل', 'سيارة عائلية بحالة الوكالة', 'هاتف ذكي حديث مساحه 256GB',
+  'خدمة استقبال سياحي وتنقلات VIP', 'مطلوب موظف مبيعات بخبرة تركية', 'خدمات ترجمة وتسيير معاملات قانونية', 'فستان سهرة راقي أسود ملكي', 'ثلاجة منزلية موفرة للطاقة',
+  'طقم أثاث صالون تركي مودرن فاخر', 'محل تجاري للفروغ بموقع حيوي', 'شقة 2+1 مفروشة بالكامل', 'خدمة تصميم ديكور ومقاولات', 'فستان عرس أبيض مطرز يدوي',
+  'تيشرت قطني صيفي مميز', 'فرصة عمل محاسب مالي بخبرة', 'خدمات شحن ونقل مفروشات', 'شيالة/قطيشة أطفال مميزة',
+  'سيارة تجارية فان لنقل البضائع', 'شاشة تلفزيون 55 بوصة سمارت 4K'
+];
+const imagesPool = [
+  'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=600&auto=format&fit=crop&q=60',
+  'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=600&auto=format&fit=crop&q=60',
+  'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=600&auto=format&fit=crop&q=60',
+  'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=600&auto=format&fit=crop&q=60',
+  'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=600&auto=format&fit=crop&q=60'
+];
+
+for (let i = 1; i <= 60; i++) {
+  const cat = categoriesPool[(i - 1) % categoriesPool.length];
+  const titleItem = titlesPool[(i - 1) % titlesPool.length] + ' #' + i;
+  const cityItem = citiesPool[(i - 1) % citiesPool.length];
+  const distItem = distPool[(i - 1) % distPool.length];
+  const imgItem = imagesPool[(i - 1) % imagesPool.length];
+  const priceVal = (cat === 'jobs' || cat === 'services') ? 0 : (1000 + ((i * 350) % 95000));
+
+  let descText = `إعلان رقم ${i} تفصيلي للمنتج أو الخدمة في تركيا - ${cityItem}. جودة عالية ومعاينة مباشرة.`;
+  if (cat === 'clothing') {
+    descText = `[النوع: تيشرت / كنزة | الحالة: جديد | اللون: أسود | المقاس: M]\n${descText}`;
+  } else if (cat === 'jobs') {
+    descText = `شاغر وظيفة: مطلوب موظفين ذوي خبرة في إسطنبول، دوام كامل، بيئة عمل مريحة وراتب مجزي.`;
+  } else if (cat === 'services') {
+    descText = `قدم خدمتك/عندك خدمة؟ احترافية ومتكاملة في تركيا - استشارات، تخليص أوراق ومتابعة مباشرة بسرعة وأمان.`;
+  }
+
+  generatedDummyListings.push({
+    id: 'dummy_' + (1000 + i),
+    ownerId: 'user_dummy_admin',
+    title: titleItem,
+    category: cat,
+    listingType: (cat === 'real-estate' || cat === 'factories-shops') ? ((i % 2 === 0) ? 'rent' : 'buy') : '',
+    price: priceVal,
+    currency: (i % 3 === 0) ? '$' : 'TL',
+    country: 'تركيا',
+    city: cityItem,
+    district: distItem,
+    image: (cat === 'jobs' || cat === 'services') ? '' : imgItem,
+    images: (cat === 'jobs' || cat === 'services') ? [] : [imgItem],
+    isFeatured: (i <= 6),
+    date: '05/11/2026',
+    seller: 'المعلن المعتمد #' + i,
+    phone: '9055512345' + (i % 10),
+    email: `seller${i}@sahibindenarap.com`,
+    contactMethod: 'all',
+    desc: descText
+  });
+}
+
+let savedListings = [...generatedDummyListings];
+let savedConfig = { ...defaultSiteConfig };
+
+try {
+  const localConfig = localStorage.getItem('sahibinden_site_config');
+  if (localConfig) {
+    savedConfig = { ...defaultSiteConfig, ...JSON.parse(localConfig) };
+  }
+  const localListings = localStorage.getItem('sahibinden_all_listings');
+  if (localListings) {
+    savedListings = JSON.parse(localListings);
+  }
+} catch(e){}
+
+let storedUserProfile = { name: 'المستخدم', email: '', phone: '905551234567', isEmailVerified: false };
+let storedUserId = 'guest';
+try {
+  const savedProfile = localStorage.getItem('sahibinden_user_profile');
+  const savedUid = localStorage.getItem('sahibinden_user_id');
+  if (savedProfile && savedUid) {
+    storedUserProfile = JSON.parse(savedProfile);
+    storedUserId = savedUid;
+  }
+} catch(e){}
+
+const state = {
+  activeView: 'home',
+  adminActiveTab: 'listings',
+  authMode: 'login',
+  isAdminUnlocked: false,
+  selectedCategory: 'all',
+  searchQuery: '',
+  isSearchActiveView: false,
+  selectedListing: null,
+  isAuthenticated: !!storedUserProfile.email && (storedUserProfile.isEmailVerified !== false),
+  userProfile: storedUserProfile,
+  currentUserId: storedUserId,
+  adminSearchQuery: '',
+  uploadedImages: [],
+  pendingAdData: null,
+  draggedListingIndex: null,
+  siteConfig: savedConfig,
+  listings: savedListings
+};
+
+function handleLogoHomeClick() {
+  closeModal();
+  closePrivacyModal();
+  closeAboutModal();
+  closeContactModal();
+  state.selectedCategory = 'all';
+  state.searchQuery = '';
+  state.isSearchActiveView = false;
+  const searchInput = document.getElementById('searchInput');
+  if (searchInput) searchInput.value = '';
+  navigateTo('home');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function compressImageCanvas(file, maxWidth = 600, maxHeight = 600, quality = 0.55) {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const img = new Image();
+      img.onload = function() {
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > maxWidth) {
+            height = Math.round((height * maxWidth) / width);
+            width = maxWidth;
+          }
+        } else {
+          if (height > maxHeight) {
+            width = Math.round((width * maxHeight) / height);
+            height = maxHeight;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+        ctx.drawImage(img, 0, 0, width, height);
+
+        const compressedDataUrl = canvas.toDataURL('image/jpeg', quality);
+        resolve(compressedDataUrl);
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+window.firebaseAuthApp = null;
+window.firebaseDb = null;
+
+function subscribeToCloudListingsAndSettings() {
+  if (!window.firebaseDb) return;
+
+  const listenerPaths = ['site_settings', 'إعدادات الموقع'];
+  listenerPaths.forEach(pathName => {
+    window.firebaseDb.collection(pathName).doc('global').onSnapshot(doc => {
+      if (doc && doc.exists) {
+        const cloudData = doc.data();
+        state.siteConfig = {
+          ...state.siteConfig,
+          ...cloudData,
+          socials: {
+            ...state.siteConfig.socials,
+            ...(cloudData.socials || {})
+          }
+        };
+        localStorage.setItem('sahibinden_site_config', JSON.stringify(state.siteConfig));
+        updateFooterUI();
+      }
+    }, err => console.log("Cloud settings sync note:", err));
+  });
+
+  const listingsPaths = ['user_listings', 'قائمة المستخدمين'];
+  listingsPaths.forEach(pathName => {
+    window.firebaseDb.collection(pathName).onSnapshot(snap => {
+      if (snap && !snap.empty) {
+        const cloudItems = [];
+        snap.forEach(doc => cloudItems.push(doc.data()));
+
+        const combinedMap = new Map();
+        cloudItems.forEach(item => combinedMap.set(item.id, item));
+        state.listings.forEach(item => {
+          if (!combinedMap.has(item.id)) {
+            combinedMap.set(item.id, item);
+          }
+        });
+
+        state.listings = Array.from(combinedMap.values());
+        persistListings();
+        renderView();
+      }
+    }, err => console.log("Cloud listings sync note:", err));
+  });
+}
+
+try {
+  if (typeof firebase !== 'undefined') {
+    const firebaseConfig = {
+      apiKey: defaultSiteConfig.firebaseApiKey,
+      authDomain: defaultSiteConfig.firebaseAuthDomain,
+      projectId: defaultSiteConfig.firebaseProjectId,
+      storageBucket: defaultSiteConfig.firebaseStorageBucket
+    };
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
+    window.firebaseAuthApp = firebase.auth();
+    if (firebase.firestore) {
+      window.firebaseDb = firebase.firestore();
+    }
+
+    if (window.firebaseAuthApp) {
+      window.firebaseAuthApp.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(err => {
+        console.log("Auth persistence setup:", err);
+      });
+    }
+
+    subscribeToCloudListingsAndSettings();
+
+    window.firebaseAuthApp.onAuthStateChanged(async user => {
+      const modalActive = !document.getElementById('customModal')?.classList.contains('hidden');
+      if (user) {
+        if (user.emailVerified) {
+          state.isAuthenticated = true;
+          state.currentUserId = user.uid;
+          state.userProfile.email = user.email.toLowerCase();
+          state.userProfile.name = user.displayName || user.email.split('@')[0];
+          state.userProfile.isEmailVerified = true;
+          localStorage.setItem('sahibinden_user_profile', JSON.stringify(state.userProfile));
+          localStorage.setItem('sahibinden_user_id', user.uid);
+        } else {
+          state.isAuthenticated = false;
+          state.userProfile.isEmailVerified = false;
+        }
+      } else {
+        if (!localStorage.getItem('sahibinden_user_profile')) {
+          state.isAuthenticated = false;
+          state.currentUserId = 'guest';
+          state.userProfile.email = '';
+          state.userProfile.isEmailVerified = false;
+        }
+      }
+      updateAuthHeaderUI();
+      if (!modalActive) {
+        renderView();
+      }
+    });
+  }
+} catch(err) {
+  console.log("Firebase initialized in cloud persistent mode.");
+}
+
+function persistListings() {
+  try {
+    localStorage.setItem('sahibinden_all_listings', JSON.stringify(state.listings));
+  } catch(e) {}
+}
+
+async function syncListingToCloud(item) {
+  if (window.firebaseDb) {
+    try {
+      const cleanPayload = {
+        id: item.id || 'ad_' + Date.now(),
+        ownerId: item.ownerId || state.currentUserId || 'guest',
+        title: item.title || '',
+        category: item.category || 'real-estate',
+        listingType: item.listingType || '',
+        price: Number(item.price) || 0,
+        currency: item.currency || 'TL',
+        country: item.country || 'تركيا',
+        city: item.city || 'إسطنبول',
+        district: item.district || '',
+        image: item.image || '',
+        images: Array.isArray(item.images) ? item.images : [item.image].filter(Boolean),
+        isFeatured: Boolean(item.isFeatured),
+        date: item.date || getFormattedRealDate(),
+        seller: item.seller || 'مستخدم مسجل',
+        phone: item.phone || '',
+        email: (item.email || state.userProfile.email || '').toLowerCase(),
+        contactMethod: item.contactMethod || 'all',
+        desc: item.desc || '',
+        updatedAt: Date.now()
+      };
+
+      await window.firebaseDb.collection('user_listings').doc(cleanPayload.id).set(cleanPayload);
+      await window.firebaseDb.collection('قائمة المستخدمين').doc(cleanPayload.id).set(cleanPayload);
+    } catch(e) {
+      console.error("Cloud sync error storing listing to Firebase:", e);
+    }
+  }
+}
+
+async function syncSettingsToCloud(cfg) {
+  if (window.firebaseDb) {
+    try {
+      await window.firebaseDb.collection('site_settings').doc('global').set(cfg, { merge: true });
+      await window.firebaseDb.collection('إعدادات الموقع').doc('global').set(cfg, { merge: true });
+    } catch(e) {
+      console.error("Settings cloud sync error:", e);
+    }
+  }
+}
+
+let adCountdownInterval = null;
+let footerAdminClicks = 0;
+let footerAdminTimer = null;
+
+function handleHiddenFooterAdminShortcut() {
+  footerAdminClicks++;
+  clearTimeout(footerAdminTimer);
+  footerAdminTimer = setTimeout(() => { footerAdminClicks = 0; }, 2000);
+  if (footerAdminClicks >= 5) {
+    footerAdminClicks = 0;
+    openAdminPassModal();
+  }
+}
+
+function openAdminPassModal() {
+  openModalCard(`
+    <div class="space-y-4 text-right">
+      <div class="flex items-center justify-between border-b pb-2">
+        <h3 class="font-extrabold text-sm text-red-700 flex items-center gap-1.5">
+          <i class="fa-solid fa-lock"></i> كلمة مرور الأدمن
+        </h3>
+        <button type="button" onclick="closeModal()" class="text-gray-400 hover:text-red-500 font-bold text-lg cursor-pointer">×</button>
+      </div>
+      <p class="text-xs text-gray-600 font-semibold">أدخل كلمة المرور الخاصة بالأدمن للوصول إلى لوحة التحكم</p>
+      <input type="password" id="adminPassInput" placeholder="أدخل كلمة المرور..." class="w-full border rounded-lg p-2.5 text-xs font-mono outline-none focus:ring-2 focus:ring-red-500">
+      <div id="adminPassError" class="hidden text-xs text-red-600 font-bold bg-red-50 p-2 rounded border border-red-200 text-center">رمز المرور غير صحيح!</div>
+      <button type="button" onclick="verifyAdminPassword()" class="w-full bg-red-600 hover:bg-red-700 text-white font-extrabold py-2.5 rounded-lg text-xs cursor-pointer shadow">الدخول للوحة الأدمن</button>
+    </div>
+  `);
+}
+
+function verifyAdminPassword() {
+  const val = (document.getElementById('adminPassInput')?.value || '').trim();
+  if (val === 'khaled314#') {
+    state.isAdminUnlocked = true;
+    closeModal();
+    navigateTo('admin');
+  } else {
+    const err = document.getElementById('adminPassError');
+    if (err) err.classList.remove('hidden');
+  }
+}
+
+function getCurrentMonthKey() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+}
+
+function getFormattedRealDate() {
+  const d = new Date();
+  return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
+}
+
+function getUserAdPublishHistory(email) {
+  if (!email) return [];
+  const cleanEmail = email.toLowerCase().trim();
+  try {
+    const raw = localStorage.getItem(`user_pub_history_${cleanEmail}`);
+    return raw ? JSON.parse(raw) : [];
+  } catch(e) {
+    return [];
+  }
+}
+
+function recordUserAdPublish(email) {
+  if (!email) return;
+  const cleanEmail = email.toLowerCase().trim();
+  const history = getUserAdPublishHistory(cleanEmail);
+  history.push({
+    timestamp: Date.now(),
+    dateStr: getFormattedRealDate(),
+    monthKey: getCurrentMonthKey()
+  });
+  localStorage.setItem(`user_pub_history_${cleanEmail}`, JSON.stringify(history));
+
+  if (window.firebaseDb) {
+    try {
+      window.firebaseDb.collection('user_pub_records').doc(cleanEmail).set({
+        email: cleanEmail,
+        history: history,
+        lastUpdated: Date.now()
+      });
+      window.firebaseDb.collection('سجلات النشر للمستخدمين').doc(cleanEmail).set({
+        email: cleanEmail,
+        history: history,
+        lastUpdated: Date.now()
+      });
+    } catch(e){}
+  }
+}
+
+function hasUserFreePublishThisMonth(email) {
+  if (!email) return true;
+  const cleanEmail = email.toLowerCase().trim();
+  const history = getUserAdPublishHistory(cleanEmail);
+  const currentMonthKey = getCurrentMonthKey();
+  
+  const listingsInStateCount = state.listings.filter(item => {
+    if ((item.email || '').toLowerCase().trim() === cleanEmail) {
+      if (item.date) {
+        const parts = item.date.split('/');
+        if (parts.length === 3) {
+          const itemMonthKey = `${parts[2]}-${parts[1].padStart(2, '0')}`;
+          return itemMonthKey === currentMonthKey;
+        }
+      }
+    }
+    return false;
+  }).length;
+
+  const historyCount = history.filter(item => item.monthKey === currentMonthKey).length;
+  return (historyCount === 0 && listingsInStateCount === 0);
+}
+
+function updateAuthHeaderUI() {
+  const btnText = document.getElementById('userAuthNavText');
+  if (btnText) {
+    if (state.isAuthenticated && state.userProfile.email) {
+      btnText.innerText = state.userProfile.email.split('@')[0];
+    } else {
+      btnText.innerText = 'تسجيل الدخول / حساب جديد';
+    }
+  }
+}
+
+function handleAuthNavClick() {
+  if (state.isAuthenticated) {
+    openModalCard(`
+      <div class="text-center space-y-4 text-right">
+        <div class="w-12 h-12 bg-blue-100 text-sahibinden-blue rounded-full flex items-center justify-center mx-auto text-xl font-bold">
+          <i class="fa-solid fa-user"></i>
+        </div>
+        <h3 class="font-bold text-sm text-gray-900 text-center">حسابك الحالي المسجل والموثق</h3>
+        <p class="text-xs text-gray-600 font-mono text-center" dir="ltr">${state.userProfile.email}</p>
+        <div class="bg-emerald-50 p-2.5 rounded-lg border border-emerald-200 text-xs text-emerald-900 font-semibold leading-relaxed flex items-center gap-2 justify-center">
+          <i class="fa-solid fa-circle-check text-emerald-600 text-base"></i>
+          <span>تم التحقق من البريد الإلكتروني بنجاح وصلاحياتك مفعلة.</span>
+        </div>
+        <div class="flex gap-2 pt-2">
+          <button type="button" onclick="handleSignOut(); closeModal();" class="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-2 rounded-lg text-xs cursor-pointer">
+            تسجيل الخروج
+          </button>
+          <button type="button" onclick="closeModal()" class="flex-1 bg-gray-200 text-gray-800 font-bold py-2 rounded-lg text-xs cursor-pointer">
+            إغلاق
+          </button>
+        </div>
+      </div>
+    `);
+  } else {
+    openAuthModal('login');
+  }
+}
+
+async function handleSignOut() {
+  if (window.firebaseAuthApp) {
+    try {
+      await window.firebaseAuthApp.signOut();
+    } catch(e){}
+  }
+  state.isAuthenticated = false;
+  state.userProfile.email = '';
+  state.userProfile.name = 'المستخدم';
+  state.userProfile.isEmailVerified = false;
+  state.currentUserId = 'guest';
+  localStorage.removeItem('sahibinden_user_profile');
+  localStorage.removeItem('sahibinden_user_id');
+  updateAuthHeaderUI();
+  renderView();
+}
+
+function openPrivacyModal() {
+  const m = document.getElementById('privacyModal');
+  if (m) {
+    document.body.classList.add('modal-open');
+    m.classList.remove('hidden');
+  }
+}
+
+function closePrivacyModal() {
+  const m = document.getElementById('privacyModal');
+  if (m) {
+    m.classList.add('hidden');
+    checkAndUnlockBodyScroll();
+  }
+}
+
+function openAboutModal() {
+  const m = document.getElementById('aboutModal');
+  if (m) {
+    document.body.classList.add('modal-open');
+    m.classList.remove('hidden');
+  }
+}
+
+function closeAboutModal() {
+  const m = document.getElementById('aboutModal');
+  if (m) {
+    m.classList.add('hidden');
+    checkAndUnlockBodyScroll();
+  }
+}
+
+function openContactModal() {
+  const m = document.getElementById('contactModal');
+  if (m) {
+    const emailLink = document.getElementById('modalContactEmailLink');
+    if (emailLink && state.siteConfig.adminEmail) {
+      emailLink.href = `mailto:${state.siteConfig.adminEmail}`;
+      emailLink.innerHTML = `<i class="fa-regular fa-envelope"></i> ${state.siteConfig.adminEmail}`;
+    }
+    document.body.classList.add('modal-open');
+    m.classList.remove('hidden');
+  }
+}
+
+function closeContactModal() {
+  const m = document.getElementById('contactModal');
+  if (m) {
+    m.classList.add('hidden');
+    checkAndUnlockBodyScroll();
+  }
+}
+
+function handleContactSubmit(e) {
+  e.preventDefault();
+  const name = document.getElementById('contactName')?.value.trim();
+  const email = document.getElementById('contactEmail')?.value.trim();
+  const subject = document.getElementById('contactSubject')?.value.trim();
+  const message = document.getElementById('contactMessage')?.value.trim();
+
+  closeContactModal();
+  openModalCard(`
+    <div class="text-center space-y-4 py-3 text-right">
+      <div class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto text-3xl font-bold shadow-inner">
+        <i class="fa-solid fa-paper-plane"></i>
+      </div>
+      <div>
+        <h3 class="font-black text-base text-gray-900">تم إرسال رسالتك بنجاح! ✉️</h3>
+        <p class="text-xs text-emerald-800 font-bold mt-1 bg-emerald-50 py-1.5 px-3 rounded-lg inline-block border border-emerald-200 leading-relaxed">
+          شكراً لتواصلك معنا يا ${name}، سيقوم فريق الدعم بالرد عليك قريباً عبر البريد (${email}).
+        </p>
+      </div>
+      <button type="button" onclick="closeModal()" class="w-full bg-sahibinden-blue text-white font-extrabold py-2.5 rounded-lg text-xs cursor-pointer shadow">
+        موافق
+      </button>
+    </div>
+  `);
+}
+
+function checkAndUnlockBodyScroll() {
+  const modalHidden = document.getElementById('customModal')?.classList.contains('hidden') !== false;
+  const privacyHidden = document.getElementById('privacyModal')?.classList.contains('hidden') !== false;
+  const aboutHidden = document.getElementById('aboutModal')?.classList.contains('hidden') !== false;
+  const contactHidden = document.getElementById('contactModal')?.classList.contains('hidden') !== false;
+  const adHidden = document.getElementById('googleAdModal')?.classList.contains('hidden') !== false;
+  
+  if (modalHidden && privacyHidden && aboutHidden && contactHidden && adHidden) {
+    document.body.classList.remove('modal-open');
+  }
+}
+
+function togglePasswordVisibility(inputId, iconId) {
+  const input = document.getElementById(inputId);
+  const icon = document.getElementById(iconId);
+  if (input && icon) {
+    if (input.type === 'password') {
+      input.type = 'text';
+      icon.classList.remove('fa-eye');
+      icon.classList.add('fa-eye-slash');
+    } else {
+      input.type = 'password';
+      icon.classList.remove('fa-eye-slash');
+      icon.classList.add('fa-eye');
+    }
+  }
+}
+
+async function handleForgotPassword() {
+  const emailInput = document.getElementById('authEmail');
+  const email = emailInput ? emailInput.value.trim().toLowerCase() : '';
+
+  if (!email) {
+    openModalCard(`
+      <div class="space-y-4 text-right">
+        <div class="flex items-center justify-between border-b pb-2">
+          <h3 class="font-extrabold text-sm text-red-600 flex items-center gap-1.5">
+            <i class="fa-solid fa-circle-exclamation"></i> إدخال البريد الإلكتروني مطلوب
+          </h3>
+          <button type="button" onclick="closeModal()" class="text-gray-400 hover:text-red-500 font-bold text-lg cursor-pointer">×</button>
+        </div>
+        <p class="text-xs text-gray-700 leading-relaxed font-bold">
+          يرجى إدخال البريد الإلكتروني الخاص بك في الحقل المخصص أولاً، ثم الضغط على زر "هل نسيت كلمة السر؟" لتتمكن من استلام رابط إعادة التعيين.
+        </p>
+        <button type="button" onclick="closeModal()" class="w-full bg-sahibinden-yellow text-black font-extrabold py-2.5 rounded-lg text-xs cursor-pointer shadow">
+          موافق، سأكتب البريد الآن
+        </button>
+      </div>
+    `);
+    return;
+  }
+
+  try {
+    if (window.firebaseAuthApp) {
+      await window.firebaseAuthApp.sendPasswordResetEmail(email);
+    }
+  } catch(e){}
+
+  openModalCard(`
+    <div class="space-y-4 text-right">
+      <div class="flex items-center justify-between border-b pb-2">
+        <h3 class="font-extrabold text-sm text-sahibinden-blue flex items-center gap-1.5">
+          <i class="fa-solid fa-paper-plane"></i> تم إرسال بريد إعادة تعيين كلمة السر
+        </h3>
+        <button type="button" onclick="closeModal()" class="text-gray-400 hover:text-red-500 font-bold text-lg cursor-pointer">×</button>
+      </div>
+      <div class="blue-50 border border-blue-200 text-blue-900 p-3 rounded-lg text-xs leading-relaxed space-y-2 font-semibold">
+        <p>تم إرسال رابط إعادة تعيين كلمة السر إلى البريد: <strong class="font-mono text-gray-900">${email}</strong></p>
+        <p class="text-[11px] text-amber-800 bg-amber-50 p-2 rounded border border-amber-200">
+          ⚠️ يُرجى التحقق من صندوق الرسائل غير المرغوب فيها (Spam / Junk) في حال عدم وصول الرسالة إلى البريد الوارد.
+        </p>
+      </div>
+      <button type="button" onclick="closeModal()" class="w-full bg-sahibinden-blue text-white font-extrabold py-2.5 rounded-lg text-xs cursor-pointer shadow">
+        فهمت
+      </button>
+    </div>
+  `);
+}
+
+function openAuthModal(mode) {
+  state.authMode = mode || 'login';
+  openModalCard(`
+    <div class="space-y-4 text-right">
+      <div class="flex border-b border-gray-200 pb-2 gap-2">
+        <button type="button" id="tabAuthLogin" onclick="switchAuthMode('login')" class="flex-1 py-2 text-xs sm:text-sm font-extrabold ${state.authMode === 'login' ? 'border-b-2 border-sahibinden-blue text-sahibinden-blue' : 'text-gray-400'} transition cursor-pointer">
+          تسجيل الدخول
+        </button>
+        <button type="button" id="tabAuthRegister" onclick="switchAuthMode('register')" class="flex-1 py-2 text-xs sm:text-sm font-extrabold ${state.authMode === 'register' ? 'border-b-2 border-sahibinden-blue text-sahibinden-blue' : 'text-gray-400'} transition cursor-pointer">
+          حساب جديد
+        </button>
+        <button type="button" onclick="closeModal()" class="text-gray-400 hover:text-red-500 font-bold text-lg px-2">×</button>
+      </div>
+
+      <div class="text-center pb-1">
+        <h3 id="authModalHeaderTitle" class="font-extrabold text-sm sm:text-base text-sahibinden-darkBlue">
+          ${state.authMode === 'login' ? 'تسجيل الدخول إلى حسابك' : 'إنشاء حساب جديد مع التحقق الإجباري'}
+        </h3>
+        <p class="text-[11px] text-gray-500 mt-0.5">
+          ${state.authMode === 'login' ? 'أدخل بريدك الموثق وكلمة المرور للدخول' : 'يجب تأكيد البريد الإلكتروني عبر الرابط المرسل قبل تفعيل الحساب والنشر'}
+        </p>
+      </div>
+
+      <form onsubmit="handleAuthSubmit(event)" class="space-y-3">
+        <div id="authNameField" class="${state.authMode === 'register' ? '' : 'hidden'}">
+          <label class="block text-xs font-bold text-gray-700 mb-1">الاسم الكامل *</label>
+          <input type="text" id="authName" autocomplete="name" placeholder="أدخل اسمك..." class="w-full border rounded-lg p-2.5 text-xs outline-none focus:ring-2 focus:ring-sahibinden-blue">
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-gray-700 mb-1">البريد الإلكتروني *</label>
+          <input type="email" id="authEmail" required autocomplete="email" placeholder="example@mail.com" class="w-full border rounded-lg p-2.5 text-xs outline-none focus:ring-2 focus:ring-sahibinden-blue">
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-gray-700 mb-1">كلمة المرور *</label>
+          <div class="relative">
+            <input type="password" id="authPassword" required autocomplete="current-password" placeholder="••••••••" class="w-full border rounded-lg p-2.5 pl-9 text-xs outline-none focus:ring-2 focus:ring-sahibinden-blue">
+            <button type="button" onclick="togglePasswordVisibility('authPassword', 'eyeIconPassword')" class="absolute left-2.5 top-2.5 text-gray-400 hover:text-gray-700 text-xs cursor-pointer">
+              <i id="eyeIconPassword" class="fa-solid fa-eye"></i>
+            </button>
+          </div>
+        </div>
+
+        ${state.authMode === 'login' ? `
+          <div class="flex items-center justify-between text-xs pt-1">
+            <button type="button" onclick="handleForgotPassword()" class="text-xs text-red-600 font-bold hover:underline cursor-pointer">
+              هل نسيت كلمة السر؟
+            </button>
+            <button type="button" onclick="openPrivacyModal()" class="text-sahibinden-blue font-bold hover:underline">
+              سياسة الخصوصية
+            </button>
+          </div>
+        ` : `
+          <div class="bg-amber-50 border border-amber-200 text-amber-900 p-2.5 rounded-lg text-[11px] leading-relaxed font-semibold">
+            🔒 <strong class="font-extrabold">تنبيه أمني صارم:</strong> عند التسجيل، سيتم إرسال رابط تحقق رسمي إلى بريدك الإلكتروني. لن تتمكن من الدخول أو النشر حتى تنقر على رابط التحقق في بريدك.
+          </div>
+        `}
+
+        <div id="authErrorMessage" class="hidden text-xs text-red-600 font-bold bg-red-50 p-2 rounded border border-red-200 text-center"></div>
+
+        <button type="submit" id="btnAuthSubmit" class="w-full bg-sahibinden-yellow hover:bg-yellow-400 text-black font-extrabold py-3 rounded-lg text-xs sm:text-sm transition shadow-md mt-2 cursor-pointer flex items-center justify-center gap-1.5">
+          <i class="fa-solid fa-right-to-bracket"></i>
+          <span>${state.authMode === 'login' ? 'تسجيل الدخول' : 'إنشاء حساب وإرسال رابط التحقق'}</span>
+        </button>
+      </form>
+    </div>
+  `);
+}
+
+function switchAuthMode(mode) {
+  state.authMode = mode;
+  openAuthModal(mode);
+}
+
+async function handleAuthSubmit(e) {
+  e.preventDefault();
+  const email = (document.getElementById('authEmail')?.value || '').trim().toLowerCase();
+  const pass = (document.getElementById('authPassword')?.value || '').trim();
+  const nameInput = document.getElementById('authName');
+  const name = nameInput ? nameInput.value.trim() : '';
+  const errDiv = document.getElementById('authErrorMessage');
+
+  if (!email || !pass) return;
+
+  try {
+    if (window.firebaseAuthApp) {
+      if (state.authMode === 'login') {
+        const userCred = await window.firebaseAuthApp.signInWithEmailAndPassword(email, pass);
+        const fbUser = userCred.user;
+        
+        if (!fbUser.emailVerified) {
+          await window.firebaseAuthApp.signOut();
+          if (errDiv) {
+            errDiv.innerHTML = `لم يتم التحقق من بريدك الإلكتروني بعد!<br>يرجى النقر على رابط التحقق المرسل سابقاً إلى بريدك (<strong class="font-mono">${email}</strong>) ثم حاول تسجيل الدخول مجدداً.`;
+            errDiv.classList.remove('hidden');
+          }
+          return;
+        }
+
+        state.isAuthenticated = true;
+        state.currentUserId = fbUser.uid;
+        state.userProfile.email = fbUser.email.toLowerCase();
+        state.userProfile.name = fbUser.displayName || email.split('@')[0];
+        state.userProfile.isEmailVerified = true;
+
+        localStorage.setItem('sahibinden_user_profile', JSON.stringify(state.userProfile));
+        localStorage.setItem('sahibinden_user_id', fbUser.uid);
+
+        closeModal();
+        updateAuthHeaderUI();
+        renderView();
+      } else {
+        const userCred = await window.firebaseAuthApp.createUserWithEmailAndPassword(email, pass);
+        const fbUser = userCred.user;
+
+        if (name && fbUser) {
+          await fbUser.updateProfile({ displayName: name }).catch(()=>{});
+        }
+
+        await fbUser.sendEmailVerification();
+        await window.firebaseAuthApp.signOut();
+
+        openModalCard(`
+          <div class="text-center space-y-4 py-3 text-right">
+            <div class="w-16 h-16 bg-blue-100 text-sahibinden-blue rounded-full flex items-center justify-center mx-auto text-3xl font-bold shadow-inner animate-pulse">
+              <i class="fa-solid fa-envelope-circle-check"></i>
+            </div>
+            <div>
+              <h3 class="font-black text-base text-gray-900">تم إنشاء الحساب بنجاح! ✉️</h3>
+              <p class="text-xs text-blue-800 font-bold mt-1 bg-blue-50 py-1.5 px-3 rounded-lg inline-block border border-blue-200 leading-relaxed">
+                تم إرسال رابط التحقق الرسمي إلى بريدك: <strong class="font-mono text-gray-900">${email}</strong>
+              </p>
+            </div>
+            <div class="bg-amber-50 p-3 rounded-xl border border-amber-200 text-xs text-amber-900 leading-relaxed text-right space-y-1 font-semibold">
+              <p>⚠️ <strong class="font-extrabold">قاعدة أمنية إلزامية:</strong> لن يتم السماح لك بتسجيل الدخول أو نشر إعلانات إلا بعد فتح بريدك الإلكتروني والنقر على رابط التحقق المرفق.</p>
+              <p class="text-[11px] text-gray-600">تحقق من صندوق الوارد أو (Spam / Junk) ثم عد لتسجيل الدخول.</p>
+            </div>
+            <button type="button" onclick="closeModal(); openAuthModal('login');" class="w-full bg-sahibinden-yellow hover:bg-yellow-400 text-black font-extrabold py-3 rounded-lg text-xs shadow transition cursor-pointer">
+              فهمت، الانتقال لتسجيل الدخول 🔓
+            </button>
+          </div>
+        `);
+      }
+    } else {
+      state.isAuthenticated = true;
+      state.currentUserId = 'user_' + Date.now();
+      state.userProfile.email = email;
+      state.userProfile.name = name || email.split('@')[0];
+      state.userProfile.isEmailVerified = true;
+
+      localStorage.setItem('sahibinden_user_profile', JSON.stringify(state.userProfile));
+      localStorage.setItem('sahibinden_user_id', state.currentUserId);
+
+      closeModal();
+      updateAuthHeaderUI();
+      renderView();
+    }
+  } catch(err) {
+    if (errDiv) {
+      errDiv.innerText = "حدث خطأ في عملية المصادقة: " + (err.message || 'تأكد من صحة البريد وكلمة المرور');
+      errDiv.classList.remove('hidden');
+    }
+  }
+}
+
+function handleAddListingClick() {
+  if (!state.isAuthenticated || !state.userProfile.email || !state.userProfile.isEmailVerified) {
+    openModalCard(`
+      <div class="space-y-4 text-right">
+        <div class="flex items-center justify-between border-b pb-2">
+          <h3 class="font-extrabold text-sm text-red-700 flex items-center gap-1.5">
+            <i class="fa-solid fa-lock"></i> التحقق من البريد مطلوب للنشر
+          </h3>
+          <button type="button" onclick="closeModal()" class="text-gray-400 hover:text-red-500 font-bold text-lg cursor-pointer">×</button>
+        </div>
+        <p class="text-xs text-gray-700 leading-relaxed font-bold">
+          عذراً، يمنع منعاً باتاً نشر أي إعلان دون تسجيل الدخول بحساب موثق عبر الرابط المرسل للبريد الإلكتروني!
+        </p>
+        <div class="flex gap-2 pt-2">
+          <button type="button" onclick="closeModal(); openAuthModal('login');" class="flex-1 bg-sahibinden-yellow text-black font-extrabold py-2.5 rounded-lg text-xs cursor-pointer shadow">
+            تسجيل الدخول الآن
+          </button>
+          <button type="button" onclick="closeModal(); openAuthModal('register');" class="flex-1 bg-sahibinden-blue text-white font-extrabold py-2.5 rounded-lg text-xs cursor-pointer shadow">
+            إنشاء حساب جديد
+          </button>
+        </div>
+      </div>
+    `);
+    return;
+  }
+  openAddListingModal();
+}
+
+function handleCategoryChangeSelect(e, targetListingTypeId) {
+  const selectedCat = e.target.value;
+  const targetContainer = document.getElementById(targetListingTypeId);
+  const clothingContainer = document.getElementById('newClothingFieldsContainer');
+  const imageUploadSection = document.getElementById('imageUploadSection');
+
+  if (targetContainer) {
+    if (selectedCat === 'factories-shops' || selectedCat === 'real-estate') {
+      targetContainer.classList.remove('hidden');
+    } else {
+      targetContainer.classList.add('hidden');
+    }
+  }
+
+  if (clothingContainer) {
+    if (selectedCat === 'clothing') {
+      clothingContainer.classList.remove('hidden');
+    } else {
+      clothingContainer.classList.add('hidden');
+    }
+  }
+
+  if (imageUploadSection) {
+    if (selectedCat === 'jobs' || selectedCat === 'services') {
+      imageUploadSection.classList.add('hidden');
+    } else {
+      imageUploadSection.classList.remove('hidden');
+    }
+  }
+}
+
+function handlePhoneCountryChange(e) {
+  const code = e.target.value;
+  const phoneInput = document.getElementById('newPhoneNumber');
+  if (!phoneInput) return;
+
+  if (code === '90') {
+    phoneInput.value = '5';
+    phoneInput.placeholder = '5XXXXXXXXX';
+  } else if (code === '966' || code === '971') {
+    phoneInput.value = '5';
+    phoneInput.placeholder = '5XXXXXXXX';
+  } else if (code === '962') {
+    phoneInput.value = '7';
+    phoneInput.placeholder = '7XXXXXXXX';
+  } else if (code === '963') {
+    phoneInput.value = '9';
+    phoneInput.placeholder = '9XXXXXXXX';
+  } else if (code === '20') {
+    phoneInput.value = '1';
+    phoneInput.placeholder = '10XXXXXXXX';
+  } else {
+    phoneInput.value = '';
+  }
+}
+
+function handlePhoneInputValidation(e) {
+  const codeEl = document.getElementById('newPhoneCountryCode');
+  const code = codeEl ? codeEl.value : '90';
+  let val = e.target.value.replace(/\D/g, '');
+
+  if (code === '90') {
+    if (!val.startsWith('5')) {
+      val = '5' + val.replace(/^5*/, '');
+    }
+    if (val.length > 10) val = val.slice(0, 10);
+  } else if (code === '966' || code === '971') {
+    if (!val.startsWith('5')) {
+      val = '5' + val.replace(/^5*/, '');
+    }
+    if (val.length > 9) val = val.slice(0, 9);
+  } else if (code === '962') {
+    if (!val.startsWith('7')) {
+      val = '7' + val.replace(/^7*/, '');
+    }
+    if (val.length > 9) val = val.slice(0, 9);
+  } else if (code === '963') {
+    if (!val.startsWith('9')) {
+      val = '9' + val.replace(/^9*/, '');
+    }
+    if (val.length > 9) val = val.slice(0, 9);
+  } else if (code === '20') {
+    if (!val.startsWith('1')) {
+      val = '1' + val.replace(/^1*/, '');
+    }
+    if (val.length > 10) val = val.slice(0, 10);
+  }
+
+  e.target.value = val;
+}
+
+function triggerFileInput() {
+  const fileInput = document.getElementById('localFileInput');
+  if (fileInput) fileInput.click();
+}
+
+async function handleLocalFileSelect(e) {
+  const files = e.target.files;
+  if (!files) return;
+
+  const remainingSlots = 5 - state.uploadedImages.length;
+  const filesToProcess = Array.from(files).slice(0, remainingSlots);
+
+  for (const file of filesToProcess) {
+    if (state.uploadedImages.length < 5) {
+      const compressedDataUrl = await compressImageCanvas(file, 600, 600, 0.55);
+      state.uploadedImages.push(compressedDataUrl);
+    }
+  }
+  renderImagePreviews();
+}
+
+function removeUploadedImage(index) {
+  state.uploadedImages.splice(index, 1);
+  renderImagePreviews();
+}
+
+function renderImagePreviews() {
+  const container = document.getElementById('imagePreviewsContainer');
+  const countBadge = document.getElementById('imageUploadCount');
+  if (countBadge) countBadge.innerText = `${state.uploadedImages.length}/5`;
+
+  if (container) {
+    if (state.uploadedImages.length === 0) {
+      container.innerHTML = `<div class="col-span-full py-2 text-center text-gray-400 text-[11px]">لم يتم تحميل صور بعد (حتى 5 صور).</div>`;
+    } else {
+      container.innerHTML = state.uploadedImages.map((imgUrl, idx) => `
+        <div class="relative aspect-square rounded border overflow-hidden bg-gray-50">
+          <img src="${imgUrl}" class="w-full h-full object-cover">
+          <button type="button" onclick="removeUploadedImage(${idx})" class="absolute top-1 left-1 bg-red-600 text-white w-4 h-4 rounded-full flex items-center justify-center text-xs">×</button>
+        </div>
+      `).join('');
+    }
+  }
+}
+
+function showPublishSuccessModal(listing) {
+  openModalCard(`
+    <div class="text-center space-y-4 py-3 text-right">
+      <div class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto text-3xl font-bold shadow-inner">
+        <i class="fa-solid fa-circle-check"></i>
+      </div>
+      <div class="text-center">
+        <h3 class="font-extrabold text-base text-gray-900">تم نشر إعلانك وحفظه سحابياً بنجاح! 🎉</h3>
+        <p class="text-xs text-emerald-700 font-bold mt-1 bg-emerald-50 py-1 px-3 rounded-full inline-block border border-emerald-200">
+          إعلانك جاهز ومحفوظ بشكل دائم
+        </p>
+      </div>
+      <div class="bg-gray-50 p-3 rounded-xl border space-y-1.5 text-xs">
+        <div class="font-bold text-gray-800">${listing.title}</div>
+        <div class="text-sahibinden-blue font-mono font-extrabold">${listing.price ? listing.price.toLocaleString() + ' ' + listing.currency : 'حسب الاتفاق / مجاني'}</div>
+        <div class="text-[11px] text-gray-500">${listing.country} - ${listing.city} - ${listing.district}</div>
+      </div>
+      <p class="text-[11px] text-gray-500 leading-relaxed text-center">
+        إعلانك الآن محفوظ نهائياً ومتاح لجميع زوار موقع من صاحب العربي.
+      </p>
+      <div class="flex gap-2 pt-2">
+        <button type="button" onclick="closeModal(); navigateTo('details', '${listing.id}');" class="flex-1 bg-sahibinden-yellow hover:bg-yellow-400 text-black font-extrabold py-2.5 rounded-lg text-xs shadow transition cursor-pointer">
+          معاينة الإعلان الآن 👁️
+        </button>
+        <button type="button" onclick="closeModal(); navigateTo('home');" class="flex-1 bg-sahibinden-blue hover:bg-blue-800 text-white font-extrabold py-2.5 rounded-lg text-xs shadow transition cursor-pointer">
+          العودة للرئيسية 🏠
+        </button>
+      </div>
+    </div>
+  `);
+}
+
+function openAddListingModal() {
+  state.uploadedImages = [];
+  openModalCard(`
+    <div class="space-y-4 text-right">
+      <div class="flex items-center justify-between border-b pb-2">
+        <h3 class="font-extrabold text-sm sm:text-base text-sahibinden-darkBlue">وضح جميع تفاصيل إعلانك</h3>
+        <button type="button" onclick="closeModal()" class="text-gray-400 hover:text-red-500 font-bold text-lg cursor-pointer">×</button>
+      </div>
+
+      <form onsubmit="handleNewListingSubmit(event)" class="space-y-3">
+        <div>
+          <label class="block text-xs font-bold text-gray-700 mb-1">عنوان الإعلان الرئيسي *</label>
+          <input type="text" id="newTitle" required placeholder="مثال: فستان سهرة أنيق، مصنع خياطة، شقة للإيجار، وظيفة محاسب، قدم خدمتك/عندك خدمة؟..." class="w-full border rounded-lg p-2.5 text-xs font-semibold outline-none focus:ring-2 focus:ring-sahibinden-blue">
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block text-xs font-bold text-gray-700 mb-1">القسم *</label>
+            <select id="newCategory" onchange="handleCategoryChangeSelect(event, 'newListingTypeContainer')" class="w-full border rounded-lg p-2.5 text-xs font-bold bg-gray-50 outline-none">
+              ${categoryListOrdered.filter(c => c.id !== 'all').map(c => `<option value="${c.id}" ${c.id === 'real-estate' ? 'selected' : ''}>${c.label}</option>`).join('')}
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-gray-700 mb-1">طريقة التواصل *</label>
+            <select id="newContactMethod" class="w-full border rounded-lg p-2.5 text-xs font-bold bg-gray-50 outline-none">
+              <option value="all" selected>إظهار الرقم والبريد الإلكتروني</option>
+              <option value="whatsapp_only">إظهار الواتساب فقط</option>
+              <option value="email_only">إظهار البريد فقط</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="newClothingFieldsContainer" class="hidden bg-pink-50 p-3 rounded-lg border border-pink-200 space-y-2.5">
+          <h4 class="font-extrabold text-xs text-pink-900 border-b border-pink-200 pb-1">تفاصيل الملابس والفساتين والإكسسوارات</h4>
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="block text-[11px] font-bold text-gray-700 mb-1">نوع القطعة *</label>
+              <select id="newClothingType" class="w-full border rounded-lg p-2 text-xs font-bold bg-white outline-none">
+                <option value="تيشرت / كنزة">تيشرت / كنزة</option>
+                <option value="قميص سهرة">قميص سهرة</option>
+                <option value="قميص">قميص</option>
+                <option value="فيزون">فيزون</option>
+                <option value="شورت">شورت</option>
+                <option value="شيالة/قطيشة">شيالة/قطيشة</option>
+                <option value="فستان عرس">فستان عرس</option>
+                <option value="فستان">فستان</option>
+                <option value="فستان طلعة">فستان طلعة</option>
+                <option value="فستان سهرة">فستان سهرة</option>
+                <option value="بلوزة">بلوزة</option>
+                <option value="كنزة صوف">كنزة صوف</option>
+                <option value="مانطو">مانطو</option>
+                <option value="جاكيت">جاكيت</option>
+                <option value="طقم">طقم</option>
+                <option value="بنطلون">بنطلون</option>
+                <option value="شنطة">شنطة</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold text-gray-700 mb-1">حالة القطعة *</label>
+              <select id="newClothingCondition" class="w-full border rounded-lg p-2 text-xs font-bold bg-white outline-none">
+                <option value="جديد">جديد</option>
+                <option value="مستعمل">مستعمل</option>
+              </select>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="block text-[11px] font-bold text-gray-700 mb-1">اللون *</label>
+              <input type="text" id="newClothingColor" placeholder="أسود، أحمر..." class="w-full border rounded-lg p-2 text-xs font-bold outline-none bg-white">
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold text-gray-700 mb-1">المقاس (اختياري)</label>
+              <input type="text" id="newClothingSize" placeholder="S, M, L, XL..." class="w-full border rounded-lg p-2 text-xs font-bold outline-none bg-white">
+            </div>
+          </div>
+        </div>
+
+        <div id="newListingTypeContainer" class="bg-amber-50 p-2.5 rounded-lg border border-amber-200">
+          <label class="block text-xs font-extrabold text-amber-900 mb-1">نوع المعاملة التجارية *</label>
+          <select id="newListingType" class="w-full border rounded-lg p-2 text-xs font-bold bg-white outline-none">
+            <option value="rent">إيجار</option>
+            <option value="buy">بيع</option>
+            <option value="forog">فروغ</option>
+          </select>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block text-xs font-bold text-gray-700 mb-1">السعر / التكلفة (0 مجاني)</label>
+            <input type="number" id="newPrice" placeholder="0.00" class="w-full border rounded-lg p-2.5 text-xs font-mono outline-none">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-gray-700 mb-1">العملة *</label>
+            <select id="newCurrency" class="w-full border rounded-lg p-2.5 text-xs font-bold bg-gray-50 outline-none">
+              <option value="TL" selected>TL (ليرة)</option>
+              <option value="$">$ (دولار)</option>
+              <option value="€">€ (يورو)</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-gray-700 mb-1">رقم الهاتف للتواصل * (يبدأ بـ 5 حصراً لتركيا)</label>
+          <div class="flex gap-2" dir="ltr">
+            <select id="newPhoneCountryCode" onchange="handlePhoneCountryChange(event)" class="w-28 border rounded-lg p-2.5 text-xs font-bold bg-gray-50 outline-none">
+              <option value="90" selected>🇹🇷 +90</option>
+              <option value="966">🇸🇦 +966</option>
+              <option value="971">🇦🇪 +971</option>
+              <option value="962">🇯🇴 +962</option>
+              <option value="963">🇸🇾 +963</option>
+              <option value="20">🇪🇬 +20</option>
+            </select>
+            <input type="tel" id="newPhoneNumber" value="5" oninput="handlePhoneInputValidation(event)" required placeholder="5XXXXXXXXX" class="flex-1 border rounded-lg p-2.5 text-xs sm:text-sm font-mono outline-none focus:ring-2 focus:ring-sahibinden-blue">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block text-xs font-bold text-gray-700 mb-1">اسم البلد *</label>
+            <input type="text" id="newCountry" value="تركيا" required class="w-full border rounded-lg p-2.5 text-xs font-bold outline-none">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-gray-700 mb-1">اسم المحافظة / المدينة *</label>
+            <input type="text" id="newCity" value="إسطنبول" required class="w-full border rounded-lg p-2.5 text-xs font-bold outline-none">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-gray-700 mb-1">المنطقة / الحي *</label>
+          <input type="text" id="newDistrict" placeholder="الفاتح، باشاك شهير..." required class="w-full border rounded-lg p-2.5 text-xs font-bold outline-none">
+        </div>
+
+        <div id="imageUploadSection">
+          <div class="flex items-center justify-between mb-1">
+            <label class="block text-xs font-bold text-gray-700">صور الإعلان (حتى 5 صور - مضغوطة تلقائياً)</label>
+            <span id="imageUploadCount" class="text-[10px] text-sahibinden-blue font-mono font-bold">0/5</span>
+          </div>
+          <input type="file" id="localFileInput" accept="image/*" multiple onchange="handleLocalFileSelect(event)" class="hidden">
+          <div onclick="triggerFileInput()" class="border-2 border-dashed border-blue-200 bg-blue-50/50 hover:bg-yellow-50 rounded-xl p-3 text-center cursor-pointer transition">
+            <i class="fa-solid fa-cloud-arrow-up text-sahibinden-blue text-lg mb-1"></i>
+            <p class="text-xs font-bold text-gray-800">حمل صورة من الاستديو (اضغط هنا)</p>
+          </div>
+          <div id="imagePreviewsContainer" class="grid grid-cols-5 gap-2 mt-2"></div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-gray-700 mb-1">وصف الإعلان / الخدمة / الشاغر الوظيفي بالتفصيل * (إجباري)</label>
+          <textarea id="newDesc" rows="3" required placeholder="اكتب وصفاً كاملاً وافياً للإعلان أو ما هي الخدمة المقدمة..." class="w-full border rounded-lg p-2.5 text-xs leading-relaxed outline-none focus:ring-2 focus:ring-sahibinden-blue"></textarea>
+        </div>
+
+        <button type="submit" class="w-full bg-sahibinden-yellow hover:bg-yellow-400 text-black font-extrabold py-3.5 rounded-lg text-xs sm:text-sm transition shadow-lg mt-3 cursor-pointer flex items-center justify-center gap-1.5">
+          <i class="fa-solid fa-check-double"></i> إرسال ونشر الإعلان
+        </button>
+      </form>
+    </div>
+  `);
+  renderImagePreviews();
+}
+
+function handleNewListingSubmit(e) {
+  e.preventDefault();
+  const title = (document.getElementById('newTitle')?.value || '').trim();
+  const category = document.getElementById('newCategory')?.value || 'real-estate';
+  const listingTypeContainer = document.getElementById('newListingTypeContainer');
+  const listingType = (listingTypeContainer && !listingTypeContainer.classList.contains('hidden')) ? (document.getElementById('newListingType')?.value || '') : '';
+  const price = parseFloat(document.getElementById('newPrice')?.value) || 0;
+  const currency = document.getElementById('newCurrency')?.value || 'TL';
+  const countryCode = document.getElementById('newPhoneCountryCode')?.value || '90';
+  const rawPhone = (document.getElementById('newPhoneNumber')?.value || '').trim();
+  const contactMethod = document.getElementById('newContactMethod')?.value || 'all';
+  const country = (document.getElementById('newCountry')?.value || 'تركيا').trim();
+  const city = (document.getElementById('newCity')?.value || 'إسطنبول').trim();
+  const district = (document.getElementById('newDistrict')?.value || '').trim();
+  let desc = (document.getElementById('newDesc')?.value || '').trim();
+
+  if (category === 'clothing') {
+    const itemPiece = document.getElementById('newClothingType')?.value || 'تيشرت / كنزة';
+    const cond = document.getElementById('newClothingCondition')?.value || 'جديد';
+    const color = (document.getElementById('newClothingColor')?.value || '').trim();
+    const size = (document.getElementById('newClothingSize')?.value || '').trim();
+    desc = `[نوع القطعة: ${itemPiece} | الحالة: ${cond}${color ? ' | اللون: ' + color : ''}${size ? ' | المقاس: ' + size : ''}]\n${desc}`;
+  }
+
+  const fullPhone = countryCode + rawPhone.replace(/^0+/, '');
+  const realDate = getFormattedRealDate();
+  const userEmail = (state.userProfile.email || 'guest@sahibinden.com').toLowerCase().trim();
+
+  let imagesArray = [];
+  if (category !== 'jobs' && category !== 'services') {
+    const defaultImg = 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=600&auto=format&fit=crop&q=60';
+    imagesArray = state.uploadedImages.length ? state.uploadedImages : [defaultImg];
+  }
+
+  const newListingObj = {
+    id: 'ad_' + Date.now(),
+    ownerId: state.currentUserId,
+    title,
+    category,
+    listingType,
+    price,
+    currency,
+    country,
+    city,
+    district,
+    image: imagesArray[0] || '',
+    images: imagesArray,
+    isFeatured: false,
+    date: realDate,
+    seller: state.userProfile.name || 'مستخدم مسجل',
+    phone: fullPhone,
+    email: userEmail,
+    contactMethod,
+    desc
+  };
+
+  closeModal();
+
+  if (hasUserFreePublishThisMonth(userEmail)) {
+    state.listings.unshift(newListingObj);
+    persistListings();
+    syncListingToCloud(newListingObj);
+    recordUserAdPublish(userEmail);
+    showPublishSuccessModal(newListingObj);
+  } else {
+    state.pendingAdData = newListingObj;
+    startGoogleAdWatchFlow();
+  }
+}
+
+function startGoogleAdWatchFlow() {
+  const adModal = document.getElementById('googleAdModal');
+  const countSpan = document.getElementById('adCountdownSeconds');
+  const btnSubmit = document.getElementById('btnConfirmPublishAfterAd');
+  const timerNotice = document.getElementById('adTimerNotice');
+  if (!adModal || !countSpan || !btnSubmit) return;
+
+  let secondsLeft = 10;
+  countSpan.innerText = secondsLeft;
+  btnSubmit.disabled = true;
+  btnSubmit.className = "w-full bg-gray-300 text-gray-500 font-extrabold py-3 rounded-xl text-xs sm:text-sm cursor-not-allowed transition shadow-md flex items-center justify-center gap-2";
+  btnSubmit.innerHTML = `<i class="fa-solid fa-lock"></i> <span>انتقال لنشر الإعلان (${secondsLeft} ثوانٍ)</span>`;
+  if (timerNotice) timerNotice.innerText = "جاري عرض الإعلان... انتظر قليلاً لنشر إعلانك الإضافي";
+
+  document.body.classList.add('modal-open');
+  adModal.classList.remove('hidden');
+  if (adCountdownInterval) clearInterval(adCountdownInterval);
+
+  adCountdownInterval = setInterval(() => {
+    secondsLeft--;
+    countSpan.innerText = secondsLeft;
+    if (secondsLeft <= 0) {
+      clearInterval(adCountdownInterval);
+      btnSubmit.disabled = false;
+      btnSubmit.className = "w-full bg-sahibinden-yellow hover:bg-yellow-400 text-black font-black py-3 rounded-xl text-xs sm:text-sm cursor-pointer transition shadow-xl flex items-center justify-center gap-2 transform hover:scale-105";
+      btnSubmit.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-700"></i> <span>تم اكتمال مشاهدة الإعلان - انقر هنا لنشر إعلانك الآن!</span>`;
+      if (timerNotice) timerNotice.innerText = "اكتمل العداد! يمكنك الآن النشر المباشر.";
+    } else {
+      btnSubmit.innerHTML = `<i class="fa-solid fa-lock"></i> <span>انتقال لنشر الإعلان (${secondsLeft} ثوانٍ)</span>`;
+    }
+  }, 1000);
+}
+
+function executeAdPublishing() {
+  const adModal = document.getElementById('googleAdModal');
+  if (adModal) adModal.classList.add('hidden');
+  checkAndUnlockBodyScroll();
+
+  if (state.pendingAdData) {
+    const publishedItem = state.pendingAdData;
+    state.listings.unshift(publishedItem);
+    persistListings();
+    syncListingToCloud(publishedItem);
+    recordUserAdPublish(publishedItem.email || state.userProfile.email || 'user@sahibinden.com');
+    state.pendingAdData = null;
+    showPublishSuccessModal(publishedItem);
+  }
+}
+
+function handleInstantSearch(e) {
+  const val = e.target.value.trim().toLowerCase();
+  const dropdown = document.getElementById('searchDropdown');
+  if (!dropdown) return;
+  if (!val) {
+    dropdown.classList.add('hidden');
+    dropdown.innerHTML = '';
+    return;
+  }
+  const matches = state.listings.filter(l => 
+    l.title.toLowerCase().includes(val) || 
+    l.city.toLowerCase().includes(val) ||
+    l.district.toLowerCase().includes(val) ||
+    (categoryNames[l.category] && categoryNames[l.category].toLowerCase().includes(val))
+  ).slice(0, 5);
+
+  if (matches.length === 0) {
+    dropdown.innerHTML = `<div class="p-3 text-xs text-gray-500 font-bold text-center">لا توجد نتائج مطابقة</div>`;
+  } else {
+    dropdown.innerHTML = matches.map(m => `
+      <div onclick="setSearchTerm('${m.title}')" class="p-2.5 hover:bg-yellow-50 flex items-center justify-between cursor-pointer transition">
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-bold text-gray-800">${m.title}</span>
+          ${m.listingType ? `<span class="bg-amber-100 text-amber-800 text-[10px] px-1.5 py-0.5 rounded font-extrabold">${listingTypeNames[m.listingType] || m.listingType}</span>` : ''}
+        </div>
+        <span class="text-xs text-sahibinden-blue font-mono font-bold">${m.price ? m.price.toLocaleString() + ' ' + m.currency : 'مجاني / اتفاق'}</span>
+      </div>
+    `).join('');
+  }
+  dropdown.classList.remove('hidden');
+}
+
+function setSearchTerm(term) {
+  const input = document.getElementById('searchInput');
+  if (input) input.value = term;
+  triggerSearch();
+}
+
+function triggerSearch() {
+  const input = document.getElementById('searchInput');
+  if (!input) return;
+  const val = input.value.trim();
+  input.blur();
+  const dropdown = document.getElementById('searchDropdown');
+  if (dropdown) dropdown.classList.add('hidden');
+
+  if (val) {
+    state.searchQuery = val;
+    state.isSearchActiveView = true;
+    renderView();
+  }
+}
+
+function clearSearch() {
+  state.searchQuery = '';
+  state.isSearchActiveView = false;
+  const input = document.getElementById('searchInput');
+  if (input) input.value = '';
+  renderView();
+}
+
+function toggleVoiceSearch() {
+  const status = document.getElementById('voiceSearchStatus');
+  if (!status) return;
+  if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'ar-SA';
+    status.classList.remove('hidden');
+    recognition.start();
+
+    recognition.onresult = function(event) {
+      const transcript = event.results[0][0].transcript;
+      const input = document.getElementById('searchInput');
+      if (input) input.value = transcript;
+      status.classList.add('hidden');
+      triggerSearch();
+    };
+    recognition.onerror = function() {
+      status.classList.add('hidden');
+      alert("تعذر التقاط الصوت، يمكنك الكتابة في حقل البحث مباشرة.");
+    };
+    recognition.onend = function() {
+      status.classList.add('hidden');
+    };
+  } else {
+    alert("خاصية البحث الصوتي غير مدعومة في هذا المتصفح.");
+  }
+}
+
+function filterByCategory(catId) {
+  state.selectedCategory = catId;
+  state.isSearchActiveView = false;
+  state.searchQuery = '';
+  const input = document.getElementById('searchInput');
+  if (input) input.value = '';
+  renderView();
+
+  setTimeout(() => {
+    const listingsAnchor = document.getElementById('listingsGridAnchor');
+    if (listingsAnchor) {
+      listingsAnchor.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, 100);
+}
+
+function handleAdminSearch(e) {
+  state.adminSearchQuery = e.target.value;
+  updateAdminTableOnly();
+}
+
+function updateAdminTableOnly() {
+  const query = (state.adminSearchQuery || '').trim().toLowerCase();
+  const filtered = state.listings.filter(item => {
+    if (!query) return true;
+    return (
+      item.title.toLowerCase().includes(query) ||
+      item.seller.toLowerCase().includes(query) ||
+      item.city.toLowerCase().includes(query) ||
+      item.district.toLowerCase().includes(query)
+    );
+  });
+
+  const tbody = document.getElementById('adminTableBody');
+  const countSpan = document.getElementById('adminFilteredCount');
+  if (countSpan) countSpan.innerText = filtered.length;
+
+  if (tbody) {
+    if (filtered.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="7" class="p-8 text-center text-gray-400 font-bold">لا توجد إعلانات مطابقة للبحث</td></tr>`;
+    } else {
+      tbody.innerHTML = filtered.map((item, idx) => `
+        <tr draggable="true" 
+            ondragstart="handleDragStart(event, ${idx})" 
+            ondragover="handleDragOver(event)" 
+            ondrop="handleDrop(event, ${idx})" 
+            ondragend="handleDragEnd(event)"
+            class="hover:bg-yellow-50/50 transition border-b cursor-grab">
+          <td class="p-3 text-center select-none">
+            <div class="flex items-center justify-center gap-1">
+              <i class="fa-solid fa-grip-vertical text-gray-400 text-sm"></i>
+              <div class="flex flex-col">
+                <button type="button" onclick="moveListingToTop('${item.id}')" title="إلى الأعلى" class="text-[10px] text-emerald-700 font-bold hover:bg-emerald-100 px-1.5 py-0.5 rounded border border-emerald-300">إلى الأعلى 🔝</button>
+                <button type="button" onclick="moveListingUp('${item.id}')" title="أعلى" class="text-[10px] text-gray-500 hover:text-black p-0.5"><i class="fa-solid fa-chevron-up"></i></button>
+                <button type="button" onclick="moveListingDown('${item.id}')" title="أسفل" class="text-[10px] text-gray-500 hover:text-black p-0.5"><i class="fa-solid fa-chevron-down"></i></button>
+              </div>
+            </div>
+          </td>
+          <td class="p-3 font-bold text-gray-900 flex items-center gap-2 max-w-xs truncate">
+            ${item.image ? `<img src="${item.image}" class="w-8 h-8 rounded object-cover border shrink-0">` : `<div class="w-8 h-8 rounded bg-gray-100 text-gray-400 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-file-lines"></i></div>`}
+            <span class="truncate">${item.title}</span>
+          </td>
+          <td class="p-3 text-gray-600 font-semibold">${categoryNames[item.category] || item.category}</td>
+          <td class="p-3 font-mono font-bold text-sahibinden-blue whitespace-nowrap">${item.price ? item.price.toLocaleString() + ' ' + item.currency : 'مجاني'}</td>
+          <td class="p-3 text-gray-600 whitespace-nowrap">${item.seller}</td>
+          <td class="p-3 text-gray-400 font-mono text-[11px]">${item.date}</td>
+          <td class="p-3 text-center whitespace-nowrap">
+            <div class="flex items-center justify-center gap-1.5">
+              <button type="button" onclick="toggleFeaturedListing('${item.id}')" class="px-2.5 py-1 rounded text-[11px] font-bold ${item.isFeatured ? 'bg-yellow-400 text-black shadow' : 'bg-gray-200 text-gray-700 hover:bg-yellow-200'} cursor-pointer transition">
+                <i class="fa-solid fa-star"></i> ${item.isFeatured ? 'مميز ⭐' : 'تمييز'}
+              </button>
+              <button type="button" onclick="confirmDeleteListing('${item.id}')" class="px-2 py-1 bg-red-100 hover:bg-red-200 text-red-700 rounded text-[11px] font-bold cursor-pointer transition">
+                <i class="fa-solid fa-trash"></i> حذف
+              </button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+  }
+}
+
+function confirmDeleteListing(id) {
+  const item = state.listings.find(l => l.id === id);
+  if (!item) return;
+
+  openModalCard(`
+    <div class="space-y-4 text-right">
+      <div class="border-b pb-2 flex items-center justify-between">
+        <h3 class="font-extrabold text-sm text-red-700 flex items-center gap-1.5">
+          <i class="fa-solid fa-triangle-exclamation"></i> تأكيد حذف الإعلان
+        </h3>
+        <button type="button" onclick="closeModal()" class="text-gray-400 hover:text-red-500 font-bold text-lg cursor-pointer">×</button>
+      </div>
+      <p class="text-xs text-gray-700 leading-relaxed font-semibold">
+        هل أنت تأكد تماماً من رغبتك في حذف هذا الإعلان؟<br>
+        <strong class="text-sahibinden-darkBlue">"${item.title}"</strong>
+      </p>
+      <div class="flex gap-2 pt-2">
+        <button type="button" onclick="executeDeleteListing('${item.id}')" class="flex-1 bg-red-600 hover:bg-red-700 text-white font-extrabold py-2.5 rounded-lg text-xs cursor-pointer shadow">
+          🗑️ نعم، احذف الإعلان فوراً
+        </button>
+        <button type="button" onclick="closeModal()" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-extrabold py-2.5 rounded-lg text-xs cursor-pointer">
+          إلغاء الأمر
+        </button>
+      </div>
+    </div>
+  `);
+}
+
+function executeDeleteListing(id) {
+  state.listings = state.listings.filter(l => l.id !== id);
+  persistListings();
+  if (window.firebaseDb) {
+    try { 
+      window.firebaseDb.collection('user_listings').doc(id).delete(); 
+      window.firebaseDb.collection('قائمة المستخدمين').doc(id).delete(); 
+    } catch(e){}
+  }
+  closeModal();
+  renderView();
+
+  openModalCard(`
+    <div class="text-center space-y-3 py-4 text-right">
+      <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto text-xl font-bold">
+        <i class="fa-solid fa-check"></i>
+      </div>
+      <h3 class="font-black text-sm text-gray-900">تم الحذف بنجاح والحفظ السحابي</h3>
+      <p class="text-xs text-gray-500">تم إزالة الإعلان بشكل نهائي ودائم.</p>
+      <button type="button" onclick="closeModal()" class="bg-sahibinden-blue text-white font-extrabold px-6 py-2 rounded-lg text-xs cursor-pointer shadow">
+        موافق
+      </button>
+    </div>
+  `);
+}
+
+function handleDragStart(e, index) {
+  state.draggedListingIndex = index;
+  e.dataTransfer.effectAllowed = 'move';
+}
+
+function handleDragOver(e) {
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+}
+
+function handleDrop(e, targetIndex) {
+  e.preventDefault();
+  const sourceIndex = state.draggedListingIndex;
+  if (sourceIndex !== null && sourceIndex !== targetIndex) {
+    const draggedItem = state.listings.splice(sourceIndex, 1)[0];
+    state.listings.splice(targetIndex, 0, draggedItem);
+    state.draggedListingIndex = null;
+    persistListings();
+    renderView();
+  }
+}
+
+function handleDragEnd(e) {
+  state.draggedListingIndex = null;
+}
+
+function moveListingToTop(id) {
+  const idx = state.listings.findIndex(l => l.id === id);
+  if (idx > 0) {
+    const item = state.listings.splice(idx, 1)[0];
+    state.listings.unshift(item);
+    persistListings();
+    renderView();
+  }
+}
+
+function moveListingUp(id) {
+  const idx = state.listings.findIndex(l => l.id === id);
+  if (idx > 0) {
+    const temp = state.listings[idx];
+    state.listings[idx] = state.listings[idx - 1];
+    state.listings[idx - 1] = temp;
+    persistListings();
+    renderView();
+  }
+}
+
+function moveListingDown(id) {
+  const idx = state.listings.findIndex(l => l.id === id);
+  if (idx !== -1 && idx < state.listings.length - 1) {
+    const temp = state.listings[idx];
+    state.listings[idx] = state.listings[idx + 1];
+    state.listings[idx + 1] = temp;
+    persistListings();
+    renderView();
+  }
+}
+
+function toggleFeaturedListing(id) {
+  const item = state.listings.find(l => l.id === id);
+  if (item) {
+    item.isFeatured = !item.isFeatured;
+    persistListings();
+    syncListingToCloud(item);
+    renderView();
+  }
+}
+
+function navigateTo(view, id) {
+  state.activeView = view;
+  if (id) {
+    const item = state.listings.find(l => l.id === id);
+    if (item) state.selectedListing = item;
+  }
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  renderView();
+}
+
+function openModalCard(html) {
+  const m = document.getElementById('customModal');
+  const c = document.getElementById('modalCard');
+  if (m && c) {
+    c.innerHTML = html;
+    document.body.classList.add('modal-open');
+    m.classList.remove('hidden');
+  }
+}
+
+function closeModal() {
+  const m = document.getElementById('customModal');
+  if (m) {
+    m.classList.add('hidden');
+    checkAndUnlockBodyScroll();
+  }
+}
+
+function updateFooterUI() {
+  const cfg = state.siteConfig;
+  const brand = document.getElementById('footerBrandName');
+  const desc = document.getElementById('footerDescText');
+  const addressText = document.getElementById('footerCompanyAddressText');
+  const keywords = document.getElementById('footerKeywordsContainer');
+  const emailBox = document.getElementById('footerEmailBox');
+  const phoneBox = document.getElementById('footerPhoneBox');
+  const copy = document.getElementById('footerCopyrightText');
+  const socialBar = document.getElementById('footerSocialBar');
+
+  if (brand) brand.innerText = cfg.siteName || 'Sahibindenarap';
+  if (desc) desc.innerText = cfg.footerDesc || 'موقع من صاحب العربي 🇹🇷 هو اول موقع في تركيا يجمع العرب بين البائع وشاري. بل إضافة الى خدمات الموقع في دول العربية.';
+  if (addressText) addressText.innerText = cfg.companyAddress || 'Istanbul Levent Plaza 314';
+  if (copy) copy.innerText = cfg.footerCopyright || 'جميع الحقوق محفوظة © 2026 موقع من الصاحب العربي';
+
+  if (keywords) {
+    const kwArr = (cfg.footerKeywords || '').split(',').map(s => s.trim()).filter(Boolean);
+    keywords.innerHTML = kwArr.map(k => `<span class="bg-gray-800 text-gray-300 text-[10px] px-2 py-1 rounded border border-gray-700">${k}</span>`).join('');
+  }
+
+  if (emailBox) {
+    if (cfg.showEmail) {
+      emailBox.classList.remove('hidden');
+      document.getElementById('footerEmailText').innerText = cfg.adminEmail;
+      document.getElementById('footerEmailLink').href = `mailto:${cfg.adminEmail}`;
+    } else {
+      emailBox.classList.add('hidden');
+    }
+  }
+
+  if (phoneBox) {
+    if (cfg.showPhone) {
+      phoneBox.classList.remove('hidden');
+      document.getElementById('footerPhoneText').innerText = cfg.adminPhone;
+      document.getElementById('footerPhoneLink').href = `tel:${cfg.adminPhone}`;
+    } else {
+      phoneBox.classList.add('hidden');
+    }
+  }
+
+  if (socialBar) {
+    const soc = cfg.socials || {};
+    const iconsMap = {
+      telegram: { icon: 'fa-telegram', color: 'bg-sky-500' },
+      youtube: { icon: 'fa-youtube', color: 'bg-red-600' },
+      instagram: { icon: 'fa-instagram', color: 'bg-pink-600' },
+      whatsapp: { icon: 'fa-whatsapp', color: 'bg-emerald-500' },
+      facebook: { icon: 'fa-facebook', color: 'bg-blue-600' },
+      tiktok: { icon: 'fa-tiktok', color: 'bg-black' },
+      snapchat: { icon: 'fa-snapchat', color: 'bg-yellow-500 text-black' }
+    };
+    let html = '';
+    let hasAnySocialShown = false;
+    Object.keys(iconsMap).forEach(key => {
+      const sItem = soc[key];
+      const isShown = sItem && (sItem.show === true || sItem.show === 'true' || sItem.show === 1);
+      if (isShown && sItem.url) {
+        hasAnySocialShown = true;
+        html += `<a href="${sItem.url}" target="_blank" class="${iconsMap[key].color} ${key === 'snapchat' ? 'text-black' : 'text-white'} w-7 h-7 rounded-full flex items-center justify-center hover:opacity-80 transition text-xs"><i class="fa-brands ${iconsMap[key].icon}"></i></a>`;
+      }
+    });
+    socialBar.innerHTML = html;
+    if (hasAnySocialShown) {
+      socialBar.classList.remove('hidden');
+      socialBar.classList.add('flex');
+    } else {
+      socialBar.classList.add('hidden');
+      socialBar.classList.remove('flex');
+    }
+  }
+}
+
+async function saveSiteSettingsButton(e) {
+  e.preventDefault();
+  const footerDescVal = (document.getElementById('configFooterDesc')?.value || '').trim();
+  const companyAddressVal = (document.getElementById('configCompanyAddress')?.value || '').trim();
+  const footerKeywordsVal = (document.getElementById('configFooterKeywords')?.value || '').trim();
+  const footerCopyrightVal = (document.getElementById('configFooterCopyright')?.value || '').trim();
+  const email = (document.getElementById('configAdminEmail')?.value || '').trim();
+  const phone = (document.getElementById('configAdminPhone')?.value || '').trim();
+  const showEmail = document.getElementById('configShowEmail')?.checked ?? true;
+  const showPhone = document.getElementById('configShowPhone')?.checked ?? false;
+  const cloudName = (document.getElementById('configCloudName')?.value || '').trim();
+  const apiKey = (document.getElementById('configCloudApiKey')?.value || '').trim();
+
+  state.siteConfig.footerDesc = footerDescVal;
+  state.siteConfig.companyAddress = companyAddressVal;
+  state.siteConfig.footerKeywords = footerKeywordsVal;
+  state.siteConfig.footerCopyright = footerCopyrightVal;
+  state.siteConfig.adminEmail = email;
+  state.siteConfig.adminPhone = phone;
+  state.siteConfig.showEmail = showEmail;
+  state.siteConfig.showPhone = showPhone;
+  state.siteConfig.cloudinaryCloudName = cloudName;
+  state.siteConfig.cloudinaryApiKey = apiKey;
+
+  const socialKeys = ['telegram', 'youtube', 'instagram', 'whatsapp', 'facebook', 'tiktok', 'snapchat'];
+  socialKeys.forEach(key => {
+    const urlVal = (document.getElementById(`configSocial_${key}`)?.value || '').trim();
+    const showVal = document.getElementById(`configSocialShow_${key}`)?.checked ?? false;
+    if (!state.siteConfig.socials[key]) state.siteConfig.socials[key] = {};
+    state.siteConfig.socials[key].url = urlVal;
+    state.siteConfig.socials[key].show = showVal;
+  });
+
+  localStorage.setItem('sahibinden_site_config', JSON.stringify(state.siteConfig));
+  await syncSettingsToCloud(state.siteConfig);
+  updateFooterUI();
+
+  openModalCard(`
+    <div class="text-center space-y-3 py-3 text-right">
+      <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto text-xl font-bold">
+        <i class="fa-solid fa-check"></i>
+      </div>
+      <h3 class="font-bold text-sm text-gray-900">تم الحفظ الدائم سحابياً ومحلياً بنجاح نهائي!</h3>
+      <p class="text-xs text-gray-500">تم حفظ التعديلات ووصف الفوتر وعنوان الشركة وشبكات التواصل في قاعدة البيانات السحابية بشكل دائم.</p>
+      <button type="button" onclick="closeModal()" class="bg-sahibinden-blue text-white font-extrabold px-6 py-2 rounded-lg text-xs cursor-pointer shadow">
+        موافق
+      </button>
+    </div>
+  `);
+}
+
+function renderView() {
+  updateFooterUI();
+  const main = document.getElementById('appMain');
+  if (!main) return;
+
+  if (state.activeView === 'home') {
+    main.innerHTML = getHomeHTML();
+  } else if (state.activeView === 'admin') {
+    main.innerHTML = getAdminHTML();
+  } else if (state.activeView === 'details') {
+    main.innerHTML = getDetailsHTML();
+  } else if (state.activeView === 'my-listings') {
+    main.innerHTML = getMyListingsHTML();
+  }
+}
+
+function getHomeHTML() {
+  const query = state.searchQuery.trim().toLowerCase();
+  const filtered = state.listings.filter(item => {
+    const matchesCategory = state.selectedCategory === 'all' || item.category === state.selectedCategory;
+    const matchesSearch = !query || 
+      item.title.toLowerCase().includes(query) ||
+      item.city.toLowerCase().includes(query) ||
+      item.district.toLowerCase().includes(query) ||
+      item.desc.toLowerCase().includes(query);
+    return matchesCategory && matchesSearch;
+  });
+
+  if (state.isSearchActiveView && query) {
+    return `
+      <div class="border-4 border-orange-500 rounded-2xl p-4 sm:p-6 bg-white shadow-xl space-y-4">
+        <div class="flex items-center justify-between border-b border-orange-200 pb-3 flex-wrap gap-2">
+          <div class="flex items-center gap-2">
+            <span class="w-3 h-3 bg-orange-500 rounded-full animate-ping"></span>
+            <h2 class="text-sm sm:text-lg font-black text-gray-900">
+              نتائج البحث المخصصة عن: <span class="text-orange-600">"${query}"</span>
+            </h2>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-xs text-orange-800 font-bold bg-orange-100 px-3 py-1 rounded-full border border-orange-200 font-mono">
+              عدد النتائج: ${filtered.length} إعلان
+            </span>
+            <button onclick="clearSearch()" class="bg-red-50 hover:bg-red-100 text-red-600 font-bold text-xs px-3 py-1.5 rounded-lg border border-red-200 transition cursor-pointer flex items-center gap-1">
+              <i class="fa-solid fa-arrow-right"></i> إلغاء البحث والعودة
+            </button>
+          </div>
+        </div>
+
+        ${filtered.length === 0 ? `
+          <div class="text-center py-12 space-y-3">
+            <i class="fa-solid fa-magnifying-glass text-5xl text-orange-300 block"></i>
+            <p class="text-sm text-gray-600 font-bold">عذراً، لم نجد أي إعلانات مطابقة للكلمة المفتاحية "${query}"</p>
+            <button onclick="clearSearch()" class="bg-sahibinden-yellow text-black font-extrabold text-xs px-5 py-2.5 rounded-lg cursor-pointer shadow">
+              العودة وتصفح كل الإعلانات
+            </button>
+          </div>
+        ` : `
+          <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+            ${filtered.map(item => `
+              <div onclick="navigateTo('details', '${item.id}')" class="bg-white rounded-xl border border-gray-200 hover:border-orange-500 cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md flex flex-col overflow-hidden group">
+                <div class="relative aspect-square w-full overflow-hidden bg-gray-100 flex items-center justify-center">
+                  ${item.image ? `<img src="${item.image}" alt="${item.title}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">` : `<div class="p-4 text-center text-indigo-700 font-extrabold text-xs flex flex-col items-center gap-2"><i class="fa-solid ${item.category === 'jobs' ? 'fa-briefcase' : 'fa-hand-holding-hand'} text-3xl"></i><span>${categoryNames[item.category] || 'تفاصيل الإعلان'}</span></div>`}
+                  ${item.isFeatured ? `<span class="absolute top-2 right-2 bg-sahibinden-yellow text-black font-extrabold text-[10px] px-2 py-0.5 rounded-md shadow"> مميز ⭐ </span>` : ''}
+                  ${item.listingType ? `<span class="absolute top-2 left-2 bg-amber-500 text-white font-extrabold text-[9px] px-1.5 py-0.5 rounded shadow">${listingTypeNames[item.listingType] || item.listingType}</span>` : ''}
+                  <span class="absolute bottom-2 right-2 bg-black/75 text-white font-mono text-[9px] sm:text-[10px] px-1.5 py-0.5 rounded">${item.city}</span>
+                </div>
+                <div class="p-2.5 sm:p-3 flex flex-col justify-between flex-grow">
+                  <h3 class="font-bold text-xs text-gray-900 line-clamp-2 leading-snug mb-2 group-hover:text-orange-600 transition">${item.title}</h3>
+                  <div class="pt-2 border-t border-gray-100 flex items-center justify-between mt-auto">
+                    <span class="font-extrabold text-xs sm:text-sm text-sahibinden-blue font-mono">${item.price ? item.price.toLocaleString() + ' ' + item.currency : 'مجاني'}</span>
+                    <span class="text-[9px] text-gray-400 font-mono">${item.date}</span>
+                  </div>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        `}
+      </div>
+    `;
+  }
+
+  return `
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 sm:gap-6">
+      <div class="md:col-span-1 space-y-4">
+        <div class="bg-white border border-gray-200 rounded-xl p-3 sm:p-4 shadow-sm">
+          <h3 class="font-bold text-xs sm:text-sm text-gray-900 border-b pb-2.5 mb-2.5 flex items-center justify-between">
+            <span><i class="fa-solid fa-list-ul text-sahibinden-blue ml-1.5"></i> أقسام الإعلانات</span>
+          </h3>
+          <ul class="space-y-1 text-xs font-semibold">
+            ${categoryListOrdered.map(cat => {
+              const isSelected = state.selectedCategory === cat.id;
+              return `
+                <li>
+                  <button onclick="filterByCategory('${cat.id}')" class="w-full text-right py-2.5 px-3 rounded-lg transition flex items-center ${isSelected ? 'bg-sahibinden-yellow font-extrabold text-black shadow-sm' : 'text-gray-700 hover:bg-gray-100'} cursor-pointer">
+                    <span><i class="fa-solid ${cat.icon} ml-2.5 text-sm"></i> ${cat.label}</span>
+                  </button>
+                </li>
+              `;
+            }).join('')}
+          </ul>
+        </div>
+      </div>
+
+      <div class="md:col-span-3 space-y-4" id="listingsGridAnchor">
+        <div class="bg-amber-50 border-r-4 border-amber-500 p-3 rounded-lg shadow-sm text-xs font-semibold text-amber-900 flex items-center gap-2">
+          <i class="fa-solid fa-shield-cat text-amber-600 text-base"></i>
+          <span>تنبيه أمني: يُرجى عدم تحويل أي مبالغ مالية مسبقاً قبل معاينة المنتج أو العقار أو الخدمة فحصاً وتأكيداً.</span>
+        </div>
+
+        <div class="flex items-center justify-between bg-white p-3 rounded-xl border border-gray-200 shadow-sm">
+          <h2 class="text-xs sm:text-sm font-bold text-gray-800 flex items-center gap-1.5">
+            <i class="fa-solid fa-border-all text-sahibinden-blue"></i>
+            <span>إعلانات تركيا للبيع والشراء وفرص العمل والخدمات (${categoryNames[state.selectedCategory] || 'الكل'})</span>
+          </h2>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+          ${filtered.map(item => `
+            <div onclick="navigateTo('details', '${item.id}')" class="bg-white rounded-xl border border-gray-200 hover:border-sahibinden-blue cursor-pointer transition shadow-sm hover:shadow-md flex flex-col overflow-hidden group">
+              <div class="relative aspect-square w-full overflow-hidden bg-gray-100 flex items-center justify-center">
+                ${item.image ? `<img src="${item.image}" alt="${item.title}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">` : `<div class="p-4 text-center text-indigo-700 font-extrabold text-xs flex flex-col items-center gap-2"><i class="fa-solid ${item.category === 'jobs' ? 'fa-briefcase' : 'fa-hand-holding-hand'} text-3xl"></i><span>${categoryNames[item.category] || 'تفاصيل الإعلان'}</span></div>`}
+                ${item.isFeatured ? `<span class="absolute top-2 right-2 bg-sahibinden-yellow text-black font-extrabold text-[10px] px-2 py-0.5 rounded-md shadow"> مميز ⭐ </span>` : ''}
+                ${item.listingType ? `<span class="absolute top-2 left-2 bg-amber-500 text-white font-extrabold text-[9px] px-1.5 py-0.5 rounded shadow">${listingTypeNames[item.listingType] || item.listingType}</span>` : ''}
+                <span class="absolute bottom-2 right-2 bg-black/75 text-white font-mono text-[9px] sm:text-[10px] px-1.5 py-0.5 rounded">${item.city}</span>
+              </div>
+              <div class="p-2.5 sm:p-3 flex flex-col justify-between flex-grow">
+                <h3 class="font-bold text-xs text-gray-900 line-clamp-2 leading-snug mb-2 group-hover:text-sahibinden-blue transition">${item.title}</h3>
+                <div class="pt-2 border-t border-gray-100 flex items-center justify-between mt-auto">
+                  <span class="font-extrabold text-xs sm:text-sm text-sahibinden-blue font-mono">${item.price ? item.price.toLocaleString() + ' ' + item.currency : 'مجاني'}</span>
+                  <span class="text-[9px] text-gray-400 font-mono">${item.date}</span>
+                </div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function getDetailsHTML() {
+  const item = state.selectedListing || state.listings[0];
+  const msgText = encodeURIComponent(`مرحباً، أود الاستفسار عن إعلانك: ${item.title}`);
+  const method = item.contactMethod || 'all';
+
+  return `
+    <div class="bg-white rounded-xl border border-gray-200 p-4 sm:p-6 max-w-3xl mx-auto shadow-sm space-y-4 text-right">
+      <button onclick="navigateTo('home')" class="text-xs text-sahibinden-blue font-bold flex items-center gap-1 cursor-pointer">
+        <i class="fa-solid fa-arrow-right"></i> العودة للرئيسية
+      </button>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          ${item.image ? `<img src="${item.image}" class="w-full h-64 object-cover rounded-xl border shadow-sm">` : `
+            <div class="w-full h-64 rounded-xl border bg-gradient-to-br from-indigo-50 to-blue-100 flex flex-col items-center justify-center p-6 text-center">
+              <i class="fa-solid ${item.category === 'jobs' ? 'fa-briefcase' : 'fa-hand-holding-hand'} text-5xl text-sahibinden-blue mb-2"></i>
+              <span class="font-extrabold text-sm text-sahibinden-darkBlue">${categoryNames[item.category] || 'قدم خدمتك/عندك خدمة؟'}</span>
+              <span class="text-xs text-gray-500 mt-1">إعلان نصي تفصيلي مباشر بدون صور</span>
+            </div>
+          `}
+        </div>
+
+        <div class="space-y-3">
+          <h1 class="text-base sm:text-xl font-black text-gray-900 leading-snug">${item.title}</h1>
+          <div class="text-xl sm:text-2xl font-black text-sahibinden-blue font-mono">
+            ${item.price ? item.price.toLocaleString() + ' ' + item.currency : 'حسب الاتفاق / مجاني'}
+          </div>
+
+          <div class="bg-gray-50 p-3 rounded-xl border text-xs space-y-1.5 font-semibold text-gray-700">
+            <div class="flex items-center gap-2 text-sahibinden-darkBlue font-bold border-b pb-1">
+              <i class="fa-solid fa-map-location-dot text-sahibinden-yellow"></i>
+              <span>الموقع الجغرافي والإقليم:</span>
+            </div>
+            <div>البلد : ${item.country || 'تركيا'} &nbsp;|&nbsp; المدينة : ${item.city} &nbsp;|&nbsp; المنطقة : ${item.district}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- شريط التنبيه الأمني المدرج في صفحة التفاصيل -->
+      <div class="bg-amber-50 border-r-4 border-amber-500 p-3 rounded-lg shadow-sm text-xs font-semibold text-amber-900 flex items-center gap-2">
+        <i class="fa-solid fa-shield-cat text-amber-600 text-base"></i>
+        <span>تنبيه أمني: يُرجى عدم تحويل أي مبالغ مالية مسبقاً قبل معاينة المنتج أو العقار أو الخدمة فحصاً وتأكيداً.</span>
+      </div>
+
+      <div class="bg-blue-50/60 p-4 rounded-xl border border-blue-100 text-xs leading-relaxed whitespace-pre-line text-gray-800 font-medium">
+        ${item.desc}
+      </div>
+
+      <div class="border-t pt-4 space-y-3">
+        ${!state.isAuthenticated ? `
+          <div class="bg-amber-50 border border-amber-200 p-4 rounded-xl text-center space-y-2">
+            <p class="text-xs font-bold text-amber-900">🔒 يرجى تسجيل الدخول بحساب موثق لعرض أزرار التواصل المباشر مع المعلن.</p>
+            <button type="button" onclick="openAuthModal('login')" class="bg-sahibinden-yellow text-black font-extrabold px-5 py-2 rounded-lg text-xs shadow cursor-pointer">
+              تسجيل الدخول الآن
+            </button>
+          </div>
+        ` : `
+          <div class="bg-emerald-50 p-3 rounded-xl border border-emerald-200 text-xs text-emerald-900 font-bold flex items-center gap-2">
+            <i class="fa-solid fa-circle-check text-emerald-600 text-base"></i>
+            <span>حسابك مسجل وموثق - تم إظهار وسائط التواصل المباشرة:</span>
+          </div>
+
+          <div class="flex flex-col gap-2 pt-1">
+            ${(method === 'all' || method === 'whatsapp_only') && item.phone ? `
+              <a href="https://wa.me/${item.phone}?text=${msgText}" target="_blank" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold py-3 rounded-xl text-xs sm:text-sm flex items-center justify-center gap-2 shadow transition">
+                <i class="fa-brands fa-whatsapp text-lg"></i>
+                <span>محادثة واتساب مباشرة (${item.phone})</span>
+              </a>
+            ` : ''}
+
+            ${(method === 'all' && item.phone) ? `
+              <a href="tel:${item.phone}" class="w-full bg-sahibinden-blue hover:bg-blue-800 text-white font-extrabold py-3 rounded-xl text-xs sm:text-sm flex items-center justify-center gap-2 shadow transition">
+                <i class="fa-solid fa-phone text-sm"></i>
+                <span>اتصال هاتفي مباشر (${item.phone})</span>
+              </a>
+            ` : ''}
+
+            ${(method === 'all' || method === 'email_only') && item.email ? `
+              <a href="mailto:${item.email}?subject=${msgText}" class="w-full bg-gray-900 hover:bg-black text-white font-extrabold py-3 rounded-xl text-xs sm:text-sm flex items-center justify-center gap-2 shadow transition">
+                <i class="fa-regular fa-envelope text-sm"></i>
+                <span>إرسال بريد إلكتروني (${item.email})</span>
+              </a>
+            ` : ''}
+          </div>
+        `}
+      </div>
+    </div>
+  `;
+}
+
+function getMyListingsHTML() {
+  const userEmail = (state.userProfile.email || '').toLowerCase().trim();
+  const myListings = state.listings.filter(l => (l.email || '').toLowerCase().trim() === userEmail);
+
+  return `
+    <div class="max-w-4xl mx-auto bg-white rounded-xl border p-4 sm:p-6 shadow-sm space-y-4 text-right">
+      <div class="flex items-center justify-between border-b pb-3">
+        <h2 class="text-base font-extrabold text-sahibinden-darkBlue flex items-center gap-2">
+          <i class="fa-solid fa-list-check text-sahibinden-blue"></i> إدارتي للإعلانات الشخصية
+        </h2>
+        <button onclick="navigateTo('home')" class="text-xs text-sahibinden-blue font-bold">العودة للرئيسية</button>
+      </div>
+
+      ${!state.isAuthenticated ? `
+        <div class="text-center py-10 space-y-3">
+          <i class="fa-solid fa-lock text-4xl text-gray-300"></i>
+          <p class="text-xs font-bold text-gray-700">يرجى تسجيل الدخول لعرض وإدارة إعلاناتك الشخصية.</p>
+          <button onclick="openAuthModal('login')" class="bg-sahibinden-yellow text-black font-extrabold text-xs px-5 py-2.5 rounded-lg">تسجيل الدخول</button>
+        </div>
+      ` : myListings.length === 0 ? `
+        <div class="text-center py-12 space-y-3">
+          <i class="fa-solid fa-folder-open text-4xl text-gray-300"></i>
+          <p class="text-xs font-bold text-gray-600">ليس لديك أي إعلانات منشورة بهذا البريد حتى الآن.</p>
+          <button onclick="handleAddListingClick()" class="bg-sahibinden-yellow text-black font-extrabold text-xs px-5 py-2.5 rounded-lg shadow">إضافة إعلان جديد الآن</button>
+        </div>
+      ` : `
+        <div class="grid grid-cols-1 gap-3">
+          ${myListings.map(item => `
+            <div class="border rounded-xl p-3 flex items-center justify-between gap-3 bg-gray-50">
+              <div class="flex items-center gap-3">
+                ${item.image ? `<img src="${item.image}" class="w-12 h-12 rounded object-cover border">` : `<div class="w-12 h-12 rounded bg-indigo-100 text-sahibinden-blue flex items-center justify-center font-bold text-xs"><i class="fa-solid fa-file-lines text-lg"></i></div>`}
+                <div>
+                  <h4 class="font-bold text-xs text-gray-900">${item.title}</h4>
+                  <div class="text-[11px] text-sahibinden-blue font-mono font-bold">${item.price ? item.price.toLocaleString() + ' ' + item.currency : 'مجاني'} - ${item.city}</div>
+                </div>
+              </div>
+              <div class="flex items-center gap-2">
+                <button onclick="navigateTo('details', '${item.id}')" class="px-3 py-1.5 bg-blue-100 hover:bg-blue-200 text-sahibinden-blue rounded font-bold text-xs">معاينة</button>
+                <button onclick="confirmDeleteListing('${item.id}')" class="px-3 py-1.5 bg-red-100 hover:bg-red-200 text-red-700 rounded font-bold text-xs">حذف</button>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      `}
+    </div>
+  `;
+}
+
+function getAdminHTML() {
+  if (!state.isAdminUnlocked) {
+    return `
+      <div class="max-w-md mx-auto bg-white rounded-xl border p-6 text-center space-y-4 shadow-lg my-12">
+        <i class="fa-solid fa-lock text-4xl text-red-600"></i>
+        <h2 class="text-base font-black text-gray-900">لوحة التحكم مقفلة</h2>
+        <p class="text-xs text-gray-600">يرجى إدخال كلمة مرور الأدمن للوصول.</p>
+        <button onclick="openAdminPassModal()" class="w-full bg-red-600 text-white font-extrabold py-2.5 rounded-lg text-xs">إدخال كلمة المرور</button>
+      </div>
+    `;
+  }
+
+  return `
+    <div class="max-w-6xl mx-auto space-y-6 text-right">
+      <div class="bg-sahibinden-darkBlue text-white p-4 rounded-xl flex items-center justify-between shadow-md">
+        <div class="flex items-center gap-2">
+          <i class="fa-solid fa-user-shield text-yellow-400 text-xl"></i>
+          <h1 class="text-sm sm:text-base font-black">لوحة تحكم الأدمن والتحكم السحابي الدائم</h1>
+        </div>
+        <button onclick="state.isAdminUnlocked = false; navigateTo('home');" class="bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg">خروج من الأدمن</button>
+      </div>
+
+      <div class="flex border-b border-gray-200 gap-2">
+        <button onclick="state.adminActiveTab='listings'; renderView();" class="py-2.5 px-5 font-bold text-xs sm:text-sm ${state.adminActiveTab==='listings'?'border-b-2 border-sahibinden-blue text-sahibinden-blue':'text-gray-500'}">إدارة الإعلانات وترتيبها</button>
+        <button onclick="state.adminActiveTab='settings'; renderView();" class="py-2.5 px-5 font-bold text-xs sm:text-sm ${state.adminActiveTab==='settings'?'border-b-2 border-sahibinden-blue text-sahibinden-blue':'text-gray-500'}">إعدادات الموقع والسحابية</button>
+      </div>
+
+      ${state.adminActiveTab === 'listings' ? `
+        <div class="bg-white rounded-xl border p-4 sm:p-6 shadow-sm space-y-4">
+          <div class="flex items-center justify-between flex-wrap gap-3">
+            <h3 class="font-extrabold text-xs sm:text-sm text-gray-900">قائمة كل الإعلانات النشطة (<span id="adminFilteredCount">${state.listings.length}</span>)</h3>
+            <input type="text" oninput="handleAdminSearch(event)" placeholder="ابحث في الإعلانات للإدارة..." class="border rounded-lg p-2 text-xs w-64 outline-none focus:ring-2 focus:ring-sahibinden-blue">
+          </div>
+
+          <div class="overflow-x-auto border rounded-xl">
+            <table class="w-full text-right text-xs">
+              <thead class="bg-gray-100 text-gray-700 border-b">
+                <tr>
+                  <th class="p-3 text-center">الترتيب</th>
+                  <th class="p-3">الإعلان</th>
+                  <th class="p-3">القسم</th>
+                  <th class="p-3">السعر</th>
+                  <th class="p-3">المعلن</th>
+                  <th class="p-3">التاريخ</th>
+                  <th class="p-3 text-center">الإجراءات</th>
+                </tr>
+              </thead>
+              <tbody id="adminTableBody">
+                ${state.listings.map((item, idx) => `
+                  <tr draggable="true" 
+                      ondragstart="handleDragStart(event, ${idx})" 
+                      ondragover="handleDragOver(event)" 
+                      ondrop="handleDrop(event, ${idx})" 
+                      ondragend="handleDragEnd(event)"
+                      class="hover:bg-yellow-50/50 transition border-b cursor-grab">
+                    <td class="p-3 text-center select-none">
+                      <div class="flex items-center justify-center gap-1">
+                        <i class="fa-solid fa-grip-vertical text-gray-400 text-sm"></i>
+                        <div class="flex flex-col">
+                          <button type="button" onclick="moveListingToTop('${item.id}')" title="إلى الأعلى" class="text-[10px] text-emerald-700 font-bold hover:bg-emerald-100 px-1.5 py-0.5 rounded border border-emerald-300">إلى الأعلى 🔝</button>
+                          <button type="button" onclick="moveListingUp('${item.id}')" title="أعلى" class="text-[10px] text-gray-500 hover:text-black p-0.5"><i class="fa-solid fa-chevron-up"></i></button>
+                          <button type="button" onclick="moveListingDown('${item.id}')" title="أسفل" class="text-[10px] text-gray-500 hover:text-black p-0.5"><i class="fa-solid fa-chevron-down"></i></button>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="p-3 font-bold text-gray-900 flex items-center gap-2 max-w-xs truncate">
+                      ${item.image ? `<img src="${item.image}" class="w-8 h-8 rounded object-cover border shrink-0">` : `<div class="w-8 h-8 rounded bg-gray-100 text-gray-400 flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-file-lines"></i></div>`}
+                      <span class="truncate">${item.title}</span>
+                    </td>
+                    <td class="p-3 text-gray-600 font-semibold">${categoryNames[item.category] || item.category}</td>
+                    <td class="p-3 font-mono font-bold text-sahibinden-blue whitespace-nowrap">${item.price ? item.price.toLocaleString() + ' ' + item.currency : 'مجاني'}</td>
+                    <td class="p-3 text-gray-600 whitespace-nowrap">${item.seller}</td>
+                    <td class="p-3 text-gray-400 font-mono text-[11px]">${item.date}</td>
+                    <td class="p-3 text-center whitespace-nowrap">
+                      <div class="flex items-center justify-center gap-1.5">
+                        <button type="button" onclick="toggleFeaturedListing('${item.id}')" class="px-2.5 py-1 rounded text-[11px] font-bold ${item.isFeatured ? 'bg-yellow-400 text-black shadow' : 'bg-gray-200 text-gray-700 hover:bg-yellow-200'} cursor-pointer transition">
+                          <i class="fa-solid fa-star"></i> ${item.isFeatured ? 'مميز ⭐' : 'تمييز'}
+                        </button>
+                        <button type="button" onclick="confirmDeleteListing('${item.id}')" class="px-2 py-1 bg-red-100 hover:bg-red-200 text-red-700 rounded text-[11px] font-bold cursor-pointer transition">
+                          <i class="fa-solid fa-trash"></i> حذف
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      ` : `
+        <form onsubmit="saveSiteSettingsButton(event)" class="bg-white rounded-xl border p-4 sm:p-6 shadow-sm space-y-4">
+          <h3 class="font-extrabold text-sm text-sahibinden-darkBlue border-b pb-2">إعدادات الفوتر ومعلومات الشركة السحابية</h3>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-bold text-gray-700 mb-1">وصف الفوتر (Footer Description)</label>
+              <textarea id="configFooterDesc" rows="3" class="w-full border rounded-lg p-2.5 text-xs outline-none">${state.siteConfig.footerDesc}</textarea>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-gray-700 mb-1">عنوان مقر الشركة (Company Address)</label>
+              <input type="text" id="configCompanyAddress" value="${state.siteConfig.companyAddress}" class="w-full border rounded-lg p-2.5 text-xs outline-none">
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-bold text-gray-700 mb-1">الكلمات المفتاحية في الفوتر (مفصولة بفواصل)</label>
+              <input type="text" id="configFooterKeywords" value="${state.siteConfig.footerKeywords}" class="w-full border rounded-lg p-2.5 text-xs outline-none">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-gray-700 mb-1">حقوق النشر (Copyright Text)</label>
+              <input type="text" id="configFooterCopyright" value="${state.siteConfig.footerCopyright}" class="w-full border rounded-lg p-2.5 text-xs outline-none">
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 border-t pt-4">
+            <div>
+              <label class="block text-xs font-bold text-gray-700 mb-1">البريد الإلكتروني للإدارة</label>
+              <input type="email" id="configAdminEmail" value="${state.siteConfig.adminEmail}" class="w-full border rounded-lg p-2.5 text-xs outline-none">
+              <div class="flex items-center gap-2 mt-1.5">
+                <input type="checkbox" id="configShowEmail" ${state.siteConfig.showEmail ? 'checked' : ''}>
+                <label for="configShowEmail" class="text-xs font-semibold text-gray-700">إظهار البريد في الفوتر</label>
+              </div>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-gray-700 mb-1">رقم هاتف الأدمن في الفوتر</label>
+              <input type="text" id="configAdminPhone" value="${state.siteConfig.adminPhone}" class="w-full border rounded-lg p-2.5 text-xs outline-none font-mono">
+              <div class="flex items-center gap-2 mt-1.5">
+                <input type="checkbox" id="configShowPhone" ${state.siteConfig.showPhone ? 'checked' : ''}>
+                <label for="configShowPhone" class="text-xs font-semibold text-gray-700">إظهار رقم الهاتف في الفوتر (افتراضياً مخفي)</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="border-t pt-4 space-y-3">
+            <h4 class="font-extrabold text-xs text-sahibinden-darkBlue">التحكم بإظهار وإخفاء روابط شبكات التواصل الاجتماعي (افتراضياً مخفية)</h4>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+              ${['telegram', 'youtube', 'instagram', 'whatsapp', 'facebook', 'tiktok', 'snapchat'].map(key => `
+                <div class="bg-gray-50 p-3 rounded-lg border space-y-1.5">
+                  <div class="flex items-center justify-between">
+                    <span class="font-bold text-xs uppercase">${key}</span>
+                    <div class="flex items-center gap-1">
+                      <input type="checkbox" id="configSocialShow_${key}" ${state.siteConfig.socials[key]?.show ? 'checked' : ''}>
+                      <label for="configSocialShow_${key}" class="text-[11px] font-bold text-gray-700">إظهار</label>
+                    </div>
+                  </div>
+                  <input type="url" id="configSocial_${key}" value="${state.siteConfig.socials[key]?.url || ''}" placeholder="رابط ${key}..." class="w-full border rounded p-1.5 text-xs outline-none font-mono">
+                </div>
+              `).join('')}
+            </div>
+          </div>
+
+          <div class="border-t pt-4">
+            <button type="submit" class="w-full bg-sahibinden-yellow hover:bg-yellow-400 text-black font-black py-3 rounded-xl text-xs sm:text-sm shadow-md transition cursor-pointer">
+              💾 حفظ الإعدادات بشكل دائم ومزامنتها سحابياً في Firebase
+            </button>
+          </div>
+        </form>
+      `}
+    </div>
+  `;
+}
+
+renderView();
+</script>
+</body>
+</html>
+```
